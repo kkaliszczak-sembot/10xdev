@@ -84,7 +84,6 @@ Opis: Użytkownik modyfikuje treść wygenerowanego dokumentu PRD
 Kryteria akceptacji:
 
 - Zmiany są zapisywane w projekcie
-- Historia zmian dostępna w panelu projektu
 
 US-009 Przeglądanie listy projektów
 Opis: Użytkownik przegląda swoje projekty na stronie głównej
