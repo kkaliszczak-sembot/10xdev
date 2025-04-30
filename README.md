@@ -99,7 +99,6 @@ npm run preview
 - Paginated and searchable project list
 - PRD generation interface (guided by AI, iterative Q&A)
 - Editable, AI-generated PRD documents
-- In-app and email notifications
 
 ### Boundaries
 - No project sharing between accounts

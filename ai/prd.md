@@ -19,7 +19,6 @@ Użytkownicy często mają ciekawe pomysły na projekty, ale brakuje im struktur
   2. Kolejne kroki: pytania o szczegóły problemu, priorytetyzację funkcji, oczekiwane UX, metryki sukcesu, ryzyka, harmonogram i zasoby.
      Proces trwa aż do kliknięcia przycisku Zakończ przez użytkownika.
 - Możliwość edycji wygenerowanego planu w dowolnym momencie.
-- System powiadomień wewnątrz aplikacji oraz mailowy.
 
 ## 4. Granice produktu
 
@@ -79,34 +78,14 @@ Kryteria akceptacji:
 - Użytkownik widzi każde pytanie w oddzielnym ekranie
 - Może zakończyć proces kliknięciem Zakończ
 
-US-008 Edycja wygenerowanego planu
-Opis: Użytkownik modyfikuje treść wygenerowanego dokumentu PRD
-Kryteria akceptacji:
-
-- Zmiany są zapisywane w projekcie
-
-US-009 Przeglądanie listy projektów
+US-008 Przeglądanie listy projektów
 Opis: Użytkownik przegląda swoje projekty na stronie głównej
 Kryteria akceptacji:
 
 - Lista jest paginowana co 10 pozycji
 - Możliwość filtrowania i wyszukiwania po nazwie
 
-US-010 Powiadomienia in-app
-Opis: Użytkownik otrzymuje powiadomienia o ukończeniu generowania PRD
-Kryteria akceptacji:
-
-- Ikona dzwonka pokazuje liczbę nieprzeczytanych powiadomień
-- Kliknięcie prowadzi do szczegółów projektu
-
-US-011 Powiadomienia email
-Opis: Użytkownik otrzymuje powiadomienie mailowe po zakończeniu generowania PRD
-Kryteria akceptacji:
-
-- Email zawiera nazwę projektu i link do dokumentu
-- Email wysyłany w ciągu 5 minut od zakończenia procesu
-
-US-012 Wylogowanie użytkownika
+US-009 Wylogowanie użytkownika
 Opis: Użytkownik wylogowuje się z aplikacji
 Kryteria akceptacji:
 
