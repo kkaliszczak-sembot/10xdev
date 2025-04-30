@@ -4,7 +4,7 @@ Frontend
 - VueJS zapewni interaktywność tam, gdzie jest potrzebna
 - TypeScript 5 dla statycznego typowania kodu i lepszego wsparcia IDE
 - Tailwind 4 pozwala na wygodne stylowanie aplikacji
-- Shadcn/ui zapewnia bibliotekę dostępnych komponentów, na których oprzemy UI
+- Shadcn/vue (wersja shadcn/ui zgodna z vue) zapewnia bibliotekę dostępnych komponentów, na których oprzemy UI
 
 Backend - Supabase jako kompleksowe rozwiązanie backendowe:
 
