@@ -10,6 +10,7 @@ import {
   CardFooter
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 // Define props
 const props = defineProps<{
@@ -67,22 +68,24 @@ const truncatedDescription = computed(() => {
 </script>
 
 <template>
-  <Card class="h-full hover:shadow-md transition-shadow duration-300">
-    <CardHeader class="pb-2">
-      <div class="flex justify-between items-start">
-        <CardTitle class="truncate">{{ project.name }}</CardTitle>
-        <Badge :variant="statusVariant">{{ statusText }}</Badge>
-      </div>
-    </CardHeader>
-    
-    <CardContent>
-      <CardDescription class="h-12 line-clamp-2">
-        {{ truncatedDescription || 'No description provided' }}
-      </CardDescription>
-    </CardContent>
-    
-    <CardFooter class="text-xs text-muted-foreground pt-0">
-      <span>Created: {{ createdDate }}</span>
-    </CardFooter>
-  </Card>
+  <a :href="`/projects/${project.id}`" class="block h-full no-underline">
+    <Card class="h-full hover:shadow-md transition-shadow duration-300 cursor-pointer">
+      <CardHeader class="pb-2">
+        <div class="flex justify-between items-start">
+          <CardTitle class="truncate">{{ project.name }}</CardTitle>
+          <Badge :variant="statusVariant">{{ statusText }}</Badge>
+        </div>
+      </CardHeader>
+      
+      <CardContent>
+        <CardDescription class="h-12 line-clamp-2">
+          {{ truncatedDescription || 'No description provided' }}
+        </CardDescription>
+      </CardContent>
+      
+      <CardFooter class="text-xs text-muted-foreground pt-0">
+        <span>Created: {{ createdDate }}</span>
+      </CardFooter>
+    </Card>
+  </a>
 </template>
