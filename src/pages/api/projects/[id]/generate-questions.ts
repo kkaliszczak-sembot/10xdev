@@ -64,6 +64,19 @@ export async function POST({ params, locals, url }: APIContext) {
       // If category storage is needed, the database schema would need to be updated
     }));
     
+    // Update project status to in_progress if it's currently 'new'
+    if (project.status === 'new') {
+      const { error: updateError } = await locals.supabase
+        .from('projects')
+        .update({ status: 'in_progress', updated_at: new Date().toISOString() })
+        .eq('id', result.data.id);
+      
+      if (updateError) {
+        console.error('Failed to update project status:', updateError);
+        // Continue with question creation even if status update fails
+      }
+    }
+    
     const { data: insertedQuestions, error: insertError } = await locals.supabase
       .from('ai_questions')
       .insert(questionsToInsert)
