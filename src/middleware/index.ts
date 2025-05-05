@@ -23,6 +23,12 @@ declare global {
 export const onRequest = defineMiddleware(async (context, next) => {
   // Initialize Supabase client
   context.locals.supabase = supabaseClient;
+
+  // TODO: Remove this!!
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: 'test@kejkej.pl',
+    password: 'pass',
+  })
   
   // For API endpoints, apply authentication
   if (context.url.pathname.startsWith('/api/')) {
@@ -62,39 +68,31 @@ export const onRequest = defineMiddleware(async (context, next) => {
           // Query to check if project belongs to current user
           const { data, error } = await context.locals.supabase
             .from('projects')
-            .select('user_id')
+            .select('id')
             .eq('id', projectId)
+            .eq('user_id', context.locals.userId)
             .single();
           
           // Handle database errors
           if (error) {
-            if (error.code === 'PGRST116') {
-              return new Response(
-                JSON.stringify({ error: 'Not Found', message: `Project with ID ${projectId} not found` }),
-                { status: 404, headers: { 'Content-Type': 'application/json' } }
-              );
-            }
-            
+            console.error('Error verifying project ownership:', error);
             return new Response(
-              JSON.stringify({ error: 'Database error', message: error.message }),
+              JSON.stringify({ error: 'Server error', message: 'Failed to verify project ownership' }),
               { status: 500, headers: { 'Content-Type': 'application/json' } }
             );
           }
           
-          // Check if project exists and belongs to current user
-          if (!data || data.user_id !== context.locals.userId) {
+          // If no project found, user doesn't have access
+          if (!data) {
             return new Response(
-              JSON.stringify({ error: 'Forbidden', message: 'You do not have permission to access this project' }),
+              JSON.stringify({ error: 'Forbidden', message: 'You do not have access to this project' }),
               { status: 403, headers: { 'Content-Type': 'application/json' } }
             );
           }
         } catch (error) {
-          console.error('Error checking project ownership:', error);
+          console.error('Error in project ownership verification:', error);
           return new Response(
-            JSON.stringify({ 
-              error: 'Authorization error', 
-              message: error instanceof Error ? error.message : 'Failed to verify project ownership' 
-            }),
+            JSON.stringify({ error: 'Server error', message: 'An unexpected error occurred' }),
             { status: 500, headers: { 'Content-Type': 'application/json' } }
           );
         }

@@ -1,0 +1,11 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NewProjectForm from '../../components/projects/NewProjectForm.vue';
+import "../../styles/global.css";
+---
+
+<Layout>
+  <main class="min-h-screen bg-gray-50 py-8">
+    <NewProjectForm client:load />
+  </main>
+</Layout>

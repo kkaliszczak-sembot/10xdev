@@ -2,6 +2,9 @@ import type { APIContext } from 'astro';
 import { ProjectService } from '../../../services/project.service';
 import { projectListQuerySchema } from './schemas';
 
+// Mark this endpoint as server-rendered (not static)
+export const prerender = false;
+
 /**
  * GET /api/projects - List projects with pagination, filtering and sorting
  */

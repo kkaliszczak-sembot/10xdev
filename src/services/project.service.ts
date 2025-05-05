@@ -146,7 +146,10 @@ export class ProjectService {
     // Insert new project
     const { data, error } = await supabase
       .from('projects')
-      .insert([command])
+      .insert([{
+        ...command,
+        user_id: (await supabase.auth.getUser()).data.user?.id
+      }])
       .select()
       .single();
     
