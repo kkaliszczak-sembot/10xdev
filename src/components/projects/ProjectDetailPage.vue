@@ -4,6 +4,7 @@ import { useForm } from 'vee-validate';
 import { z } from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
 import type { ProjectDetailsDTO, UpdateProjectCommand } from '../../types';
+import PlanningSession from './PlanningSession.vue';
 
 // UI Components
 import {
@@ -39,6 +40,8 @@ const isSaving = ref(false);
 const isEditing = ref(false);
 const error = ref<string | null>(null);
 const saveSuccess = ref(false);
+
+// No longer needed - moved to PlanningSession.vue
 
 // Form validation schema
 const formSchema = toTypedSchema(z.object({
@@ -258,6 +261,8 @@ const saveProject = async () => {
     isSaving.value = false;
   }
 };
+
+// Planning session functions moved to PlanningSession.vue
 
 // Watch for project ID changes and fetch project
 watch(() => props.projectId, () => {
@@ -503,6 +508,9 @@ watch(() => props.projectId, () => {
           </Form>
         </CardContent>
       </Card>
+      
+      <!-- Planning Session Component -->
+      <PlanningSession :project-id="props.projectId" />
     </div>
   </div>
 </template>

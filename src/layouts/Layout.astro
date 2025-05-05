@@ -1,3 +1,7 @@
+---
+import { Toaster } from '@/components/ui/sonner';
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -5,10 +9,19 @@
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>Project Manager</title>
 	</head>
 	<body>
 		<slot />
+		<Toaster 
+			richColors 
+			closeButton 
+			position="top-right" 
+			expand={false} 
+			toastOptions={{
+				duration: 4000
+			}}
+		/>
 	</body>
 </html>
 

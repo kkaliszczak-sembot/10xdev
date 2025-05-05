@@ -85,6 +85,8 @@ export type NextQuestionDTO = {
   sequence_number: number;
 };
 
+
+
 // --- Command Models (Input data for operations) ---
 
 /**
@@ -113,14 +115,6 @@ export type UpdateProjectCommand = Partial<{
   success_criteria: string | null;
 }>;
 
-/**
- * Data required to create a new AI question with answer
- */
-export type CreateAIQuestionCommand = {
-  question: string;
-  answer: string;
-  sequence_number: number;
-};
 
 /**
  * Data for updating an AI question's answer

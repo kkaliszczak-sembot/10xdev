@@ -46,7 +46,7 @@ create table ai_questions (
     id uuid primary key default uuid_generate_v4(),
     project_id uuid not null references projects(id) on delete cascade,
     question text not null,
-    answer text not null,
+    answer text,
     sequence_number integer not null,
     created_at timestamptz not null default now()
 );
