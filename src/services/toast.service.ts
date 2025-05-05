@@ -5,9 +5,6 @@
  */
 import { toast } from 'vue-sonner';
 
-// For debugging
-console.log('Toast service initialized', toast);
-
 /**
  * Toast types
  */
@@ -88,13 +85,12 @@ export class ToastService {
    * @param options - Toast options
    * @returns A promise and an ID to update the toast
    */
-  static loading(message: string, options?: ToastOptions): { id: string; update: (props: any) => void; dismiss: () => void } {
+  static loading(message: string, options?: ToastOptions): { id: string; dismiss: () => void } {
     const toastId = crypto.randomUUID();
-    const toastInstance = toast.loading(message, { id: toastId, ...options });
+    toast.loading(message, { id: toastId, ...options });
     
     return {
       id: toastId,
-      update: (props: any) => toast.update(toastId, props),
       dismiss: () => toast.dismiss(toastId)
     };
   }

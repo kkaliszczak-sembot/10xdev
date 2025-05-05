@@ -32,6 +32,7 @@ export async function POST({ params, locals, url }: APIContext) {
 
     // Get count parameter from URL query
     const count = url.searchParams.get('count') ? parseInt(url.searchParams.get('count') as string, 10) : 5;
+    const startSequenceNumber = url.searchParams.get('startSequenceNumber') ? parseInt(url.searchParams.get('startSequenceNumber') as string, 10) : 1;
     
     // Get project details to potentially customize questions in the future
     const { data: project, error: projectError } = await locals.supabase
@@ -51,7 +52,7 @@ export async function POST({ params, locals, url }: APIContext) {
     }
     
     // Generate questions using the QuestionGeneratorService
-    const generatedQuestions = QuestionGeneratorService.generateQuestions(count);
+    const generatedQuestions = QuestionGeneratorService.generateQuestions(count, startSequenceNumber);
     
     // Insert questions into the database
     const questionsToInsert = generatedQuestions.map(q => ({

@@ -181,7 +181,7 @@ const generateQuestions = async (count = 5) => {
   planningError.value = null;
   
   try {
-    const response = await fetch(`/api/projects/${props.projectId}/generate-questions?count=${count}`, {
+    const response = await fetch(`/api/projects/${props.projectId}/generate-questions?count=${count}&startSequenceNumber=${(planningQuestions.value.at(-1)?.sequence_number ?? 0) + 1}`, {
       method: 'POST'
     });
     
@@ -372,7 +372,7 @@ onMounted(() => {
                     <Textarea
                       v-model="planningAnswers[question.id]"
                       placeholder="Your answer..."
-                      class="min-h-[100px] mt-2"
+                      class="min-h-[60px] mt-2"
                     />
                   </FormControl>
                 </FormItem>

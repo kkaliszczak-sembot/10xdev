@@ -210,9 +210,6 @@ const saveProject = async () => {
     return;
   }
   
-  // Use formValues directly to ensure all fields are included
-  console.log('Saving with values:', formValues.value);
-  
   try {
     const updateData: UpdateProjectCommand = {
       name: formValues.value.name,

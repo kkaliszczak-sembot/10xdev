@@ -127,10 +127,7 @@ const handleCancel = () => {
 // Setup auto-save on component mount
 onMounted(() => {
   // Try to load draft first
-  const hasDraft = loadDraft();
-  if (hasDraft) {
-    console.log('Loaded draft from local storage');
-  }
+  loadDraft();
   
   // Setup auto-save timer (every 5 seconds)
   autoSaveTimer = setInterval(saveDraft, 5000);

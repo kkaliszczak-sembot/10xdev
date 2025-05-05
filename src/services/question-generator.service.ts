@@ -90,7 +90,7 @@ export class QuestionGeneratorService {
    * @param count - Number of questions to generate
    * @returns Array of generated questions
    */
-  static generateQuestions(count: number = 5): GeneratedQuestion[] {
+  static generateQuestions(count: number = 5, startSequenceNumber: number = 1): GeneratedQuestion[] {
     const questions: GeneratedQuestion[] = [];
     const categories = Object.keys(this.questionTemplates) as QuestionCategory[];
     
@@ -107,7 +107,7 @@ export class QuestionGeneratorService {
       
       questions.push({
         ...question,
-        sequence_number: i + 1
+        sequence_number: i + startSequenceNumber
       });
     }
     
