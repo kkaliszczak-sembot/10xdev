@@ -1,5 +1,4 @@
 import type { AIQuestionDTO } from '../types';
-import { toast } from 'vue-sonner';
 
 export class PlanningService {
   /**

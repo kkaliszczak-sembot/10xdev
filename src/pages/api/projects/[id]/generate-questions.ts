@@ -1,7 +1,8 @@
 import type { APIContext } from 'astro';
 import { projectIdSchema } from '../schemas';
 import { z } from 'zod';
-import { QuestionGeneratorService } from '../../../../services/question-generator.service';
+import { AIQuestionGeneratorService as QuestionGeneratorService } from '../../../../services/ai-question-generator.service';
+import type { GeneratedQuestion } from '@/interfaces/question-generator.interface';
 
 /**
  * POST /api/projects/:id/generate-questions - Generate new planning questions for a project
@@ -32,14 +33,26 @@ export async function POST({ params, locals, url }: APIContext) {
 
     // Get count parameter from URL query
     const count = url.searchParams.get('count') ? parseInt(url.searchParams.get('count') as string, 10) : 5;
-    const startSequenceNumber = url.searchParams.get('startSequenceNumber') ? parseInt(url.searchParams.get('startSequenceNumber') as string, 10) : 1;
     
     // Get project details to potentially customize questions in the future
     const { data: project, error: projectError } = await locals.supabase
       .from('projects')
-      .select('name, description, status')
+      .select('name, description, status, main_problem, min_feature_set, out_of_scope, success_criteria')
       .eq('id', result.data.id)
       .single();
+    
+    // Get the highest sequence number for existing questions
+    const { data: maxSequenceNumberData } = await locals.supabase
+      .from('ai_questions')
+      .select('sequence_number')
+      .eq('project_id', result.data.id)
+      .order('sequence_number', { ascending: false })
+      .limit(1);
+    
+    // Calculate the next sequence number
+    const startSequenceNumber = maxSequenceNumberData && maxSequenceNumberData.length > 0
+      ? (maxSequenceNumberData[0].sequence_number || 0) + 1
+      : 1;
     
     if (projectError) {
       return new Response(
@@ -51,11 +64,34 @@ export async function POST({ params, locals, url }: APIContext) {
       );
     }
     
+    // Ensure project data exists
+    if (!project) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Project not found'
+        }),
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const questionGeneratorService = new QuestionGeneratorService;
+    
     // Generate questions using the QuestionGeneratorService
-    const generatedQuestions = QuestionGeneratorService.generateQuestions(count, startSequenceNumber);
+    const generatedQuestions = await questionGeneratorService.generateQuestions(
+      {
+        name: project.name || '',
+        description: project.description || '',
+        main_problem: project.main_problem || '',
+        min_feature_set: project.min_feature_set || '',
+        out_of_scope: project.out_of_scope || '',
+        success_criteria: project.success_criteria || ''
+      }, 
+      count, 
+      startSequenceNumber
+    );
     
     // Insert questions into the database
-    const questionsToInsert = generatedQuestions.map(q => ({
+    const questionsToInsert = generatedQuestions.map((q: GeneratedQuestion) => ({
       question: q.question,
       sequence_number: q.sequence_number,
       project_id: result.data.id,

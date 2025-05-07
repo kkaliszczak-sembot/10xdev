@@ -34,38 +34,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      ai_interactions: {
-        Row: {
-          cost: number
-          created_at: string
-          id: string
-          project_id: string
-          user_id: string
-        }
-        Insert: {
-          cost?: number
-          created_at?: string
-          id?: string
-          project_id: string
-          user_id: string
-        }
-        Update: {
-          cost?: number
-          created_at?: string
-          id?: string
-          project_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ai_interactions_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       ai_questions: {
         Row: {
           answer: string | null
@@ -106,9 +74,12 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          main_problem: string | null
+          min_feature_set: string | null
           name: string
-          prd: Json
+          out_of_scope: string | null
           status: Database["public"]["Enums"]["project_status"]
+          success_criteria: string | null
           updated_at: string
           user_id: string
         }
@@ -116,9 +87,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          main_problem?: string | null
+          min_feature_set?: string | null
           name: string
-          prd?: Json
+          out_of_scope?: string | null
           status?: Database["public"]["Enums"]["project_status"]
+          success_criteria?: string | null
           updated_at?: string
           user_id: string
         }
@@ -126,9 +100,12 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          main_problem?: string | null
+          min_feature_set?: string | null
           name?: string
-          prd?: Json
+          out_of_scope?: string | null
           status?: Database["public"]["Enums"]["project_status"]
+          success_criteria?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -139,10 +116,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_ai_question_sequence: {
+        Args: { project_id_param: string }
+        Returns: {
+          id: string
+          question: string
+          answer: string
+          sequence_number: number
+          created_at: string
+        }[]
+      }
     }
     Enums: {
-      project_status: "new" | "in_progress" | "completed"
+      project_status: "new" | "in_progress" | "finished"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -261,7 +247,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      project_status: ["new", "in_progress", "completed"],
+      project_status: ["new", "in_progress", "finished"],
     },
   },
 } as const

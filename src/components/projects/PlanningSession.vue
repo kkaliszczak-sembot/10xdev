@@ -17,9 +17,12 @@ import PlanningQuestionsForm from './planning/PlanningQuestionsForm.vue';
 
 // Import services
 import { PlanningService } from '../../services/planning.service';
+import { AIQuestionGeneratorService } from '../../services/ai-question-generator.service';
+import { ProjectClientService } from '../../services/client/project.client.service';
 
 // Import composables
 import { useAutoSave } from '../../composables/useAutoSave';
+import type { GeneratedQuestion } from '@/interfaces/question-generator.interface';
 
 // Props
 const props = defineProps<{
@@ -113,29 +116,55 @@ const requestMoreQuestions = async () => {
     // Calculate the next sequence number
     const startSequenceNumber = (planningQuestions.value.at(-1)?.sequence_number ?? 0) + 1;
     
-    // Generate more questions
-    const newQuestions = await PlanningService.generateQuestions(
-      props.projectId, 
-      newQuestionsAmount, 
+    // Get project details for context using the client-side service
+    const projectDetails = await ProjectClientService.getProjectById(props.projectId);
+    
+    if (!projectDetails) {
+      throw new Error('Failed to fetch project details');
+    }
+    
+    // Generate more questions using AI
+    const generatedQuestions = await PlanningService.generateQuestions(
+      props.projectId,
+      newQuestionsAmount,
       startSequenceNumber
     );
     
-    // Add new questions to existing ones
-    const existingIds = planningQuestions.value.map((q: AIQuestionDTO) => q.id);
-    const filteredNewQuestions = newQuestions.filter((q: AIQuestionDTO) => !existingIds.includes(q.id));
-    
-    planningQuestions.value = [...planningQuestions.value, ...filteredNewQuestions];
+    planningQuestions.value = [...planningQuestions.value, ...generatedQuestions];
     
     // Initialize answers for new questions
-    filteredNewQuestions.forEach((question: AIQuestionDTO) => {
+    generatedQuestions.forEach((question: AIQuestionDTO) => {
       planningAnswers.value[question.id] = '';
     });
     
-    toast.success(`${filteredNewQuestions.length} new questions added!`);
+    toast.success(`${generatedQuestions.length} new AI-generated questions added!`);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Failed to get more questions';
     console.error('Error requesting more questions:', err);
     toast.error(errorMessage);
+    
+    // Fallback to standard question generation if AI fails
+    try {
+      const startSequenceNumber = (planningQuestions.value.at(-1)?.sequence_number ?? 0) + 1;
+      const newQuestions = await PlanningService.generateQuestions(
+        props.projectId, 
+        newQuestionsAmount, 
+        startSequenceNumber
+      );
+      
+      const existingIds = planningQuestions.value.map((q: AIQuestionDTO) => q.id);
+      const filteredNewQuestions = newQuestions.filter((q: AIQuestionDTO) => !existingIds.includes(q.id));
+      
+      planningQuestions.value = [...planningQuestions.value, ...filteredNewQuestions];
+      
+      filteredNewQuestions.forEach((question: AIQuestionDTO) => {
+        planningAnswers.value[question.id] = '';
+      });
+      
+      toast.success(`${filteredNewQuestions.length} new questions added (fallback mode)`);
+    } catch (fallbackErr) {
+      console.error('Fallback question generation also failed:', fallbackErr);
+    }
   } finally {
     isLoadingMoreQuestions.value = false;
   }
@@ -180,13 +209,6 @@ onMounted(() => {
   <Card class="border-primary/10 shadow-sm mt-8">
     <PlanningSessionHeader />
     <CardContent class="pt-6">
-      <!-- Debug info (remove in production) -->
-      <div class="text-xs text-muted-foreground mb-4">
-        Session active: {{ isPlanningSessionActive ? 'Yes' : 'No' }} | 
-        Questions: {{ planningQuestions.length }} | 
-        Loading: {{ isLoadingQuestions ? 'Yes' : 'No' }}
-      </div>
-      
       <!-- Initial loading state - only shown when starting a new session -->
       <PlanningSessionLoading 
         v-if="isLoadingQuestions && planningQuestions.length === 0"

@@ -3,24 +3,12 @@
  * Provides methods to create relevant questions for different project aspects
  */
 
-/**
- * Question category types for organizing questions by topic
- */
-export type QuestionCategory = 
-  | 'user_research' 
-  | 'problem_definition' 
-  | 'market_analysis' 
-  | 'technical' 
-  | 'business' 
-  | 'timeline' 
-  | 'success_metrics';
 
 /**
  * Interface for a generated question
  */
 export interface GeneratedQuestion {
   question: string;
-  category: QuestionCategory;
   sequence_number: number;
 }
 
@@ -33,7 +21,7 @@ export class QuestionGeneratorService {
    * Question templates by category
    * Each category has multiple question templates to choose from
    */
-  private static questionTemplates: Record<QuestionCategory, string[]> = {
+  private static questionTemplates: Record<string, string[]> = {
     user_research: [
       'Who is the primary user persona for this project?',
       'What are the key pain points your users are experiencing?',
@@ -92,7 +80,7 @@ export class QuestionGeneratorService {
    */
   static generateQuestions(count: number = 5, startSequenceNumber: number = 1): GeneratedQuestion[] {
     const questions: GeneratedQuestion[] = [];
-    const categories = Object.keys(this.questionTemplates) as QuestionCategory[];
+    const categories = Object.keys(this.questionTemplates) as string[];
     
     // Ensure we have at least one question from each category if count allows
     const minCategories = Math.min(categories.length, count);
@@ -133,13 +121,12 @@ export class QuestionGeneratorService {
    * @param category - The question category
    * @returns A question object with the question text and category
    */
-  private static getRandomQuestionFromCategory(category: QuestionCategory): Omit<GeneratedQuestion, 'sequence_number'> {
+  private static getRandomQuestionFromCategory(category: string): Omit<GeneratedQuestion, 'sequence_number'> {
     const templates = this.questionTemplates[category];
     const randomIndex = Math.floor(Math.random() * templates.length);
     
     return {
-      question: templates[randomIndex],
-      category
+      question: templates[randomIndex]
     };
   }
   
