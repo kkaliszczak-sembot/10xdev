@@ -360,10 +360,11 @@ watch(() => props.projectId, () => {
             </div>
             <div class="flex space-x-2">
               <Button 
-                v-if="isEditing" 
+                v-if="isEditing"
+                class="ml-2" 
                 type="button" 
                 size="sm" 
-                variant="ghost" 
+                variant="outline" 
                 @click="cancelEditing"
               >
                 Cancel

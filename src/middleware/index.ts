@@ -16,35 +16,42 @@ declare global {
 /**
  * Middleware for the application
  * 1. Initialize Supabase client
- * 2. Authenticate user for API endpoints
- * 3. Verify project ownership for project-specific endpoints
- * 4. Continue to route handler
+ * 2. Check authentication for protected routes
+ * 3. Handle API authentication and project ownership
  */
 export const onRequest = defineMiddleware(async (context, next) => {
   // Initialize Supabase client
   context.locals.supabase = supabaseClient;
-
-  // TODO: Remove this!!
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: 'test@kejkej.pl',
-    password: 'pass',
-  })
   
-  // For API endpoints, apply authentication
-  if (context.url.pathname.startsWith('/api/')) {
-    // Get session from Supabase
-    const { data: { session }, error: sessionError } = await context.locals.supabase.auth.getSession();
-    
-    // Handle session retrieval errors
-    if (sessionError) {
-      console.error('Error retrieving session:', sessionError);
-      return new Response(
-        JSON.stringify({ error: 'Authentication error', message: 'Failed to verify authentication' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
-      );
+  const pathname = context.url.pathname;
+  const isAuthPage = ['/login', '/register'].includes(pathname);
+  
+  // Get session
+  const { data: { session }, error: sessionError } = await context.locals.supabase.auth.getSession();
+  
+  if (sessionError) {
+    console.error('Error retrieving session:', sessionError);
+    return new Response(
+      JSON.stringify({ error: 'Authentication error', message: 'Failed to verify authentication' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+  
+  // Handle authentication redirects for non-API routes
+  if (!pathname.startsWith('/api/')) {
+    // Redirect authenticated users away from auth pages
+    if (isAuthPage && session) {
+      return context.redirect('/');
     }
     
-    // Check if user is authenticated
+    // Redirect unauthenticated users to login for protected routes
+    if (!isAuthPage && !session) {
+      return context.redirect('/login');
+    }
+  }
+  
+  // For API endpoints, require authentication except for auth endpoints
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
     if (!session) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized', message: 'Authentication required' }),
@@ -57,8 +64,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.userId = session.user.id;
     
     // For project-specific endpoints, verify ownership
-    if (context.url.pathname.startsWith('/api/projects/')) {
-      const projectIdMatch = context.url.pathname.match(/^\/api\/projects\/([^\/]+)/);
+    if (pathname.startsWith('/api/projects/')) {
+      const projectIdMatch = pathname.match(/^\/api\/projects\/([^\/]+)/);
       
       // Skip if not a project-specific endpoint or it's the listing endpoint
       if (projectIdMatch && projectIdMatch.length >= 2 && projectIdMatch[1] !== 'index') {

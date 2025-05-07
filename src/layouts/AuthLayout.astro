@@ -1,10 +1,5 @@
 ---
 import { Toaster } from '@/components/ui/sonner';
-import Header from '@/components/layout/Header.vue';
-
-// Get the current path to determine if we're on an auth page
-const pathname = Astro.url.pathname;
-const isAuthPage = ['/login', '/register'].includes(pathname);
 ---
 
 <!doctype html>
@@ -14,11 +9,18 @@ const isAuthPage = ['/login', '/register'].includes(pathname);
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Project Manager</title>
+		<title>Project Manager - Authentication</title>
 	</head>
 	<body>
-		{!isAuthPage && <Header client:load />}
-		<slot />
+		<main class="min-h-screen flex items-center justify-center bg-gray-50">
+			<div class="w-full max-w-md p-6">
+				<div class="text-center mb-8">
+					<h1 class="text-3xl font-bold">Project Manager</h1>
+					<p class="text-gray-600 mt-2">Transform your ideas into structured projects</p>
+				</div>
+				<slot />
+			</div>
+		</main>
 		<Toaster 
 			richColors 
 			closeButton 

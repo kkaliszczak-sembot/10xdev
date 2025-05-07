@@ -1,0 +1,26 @@
+---
+import AuthLayout from '../layouts/AuthLayout.astro';
+import LoginForm from '../components/auth/LoginForm.vue';
+import "../styles/global.css";
+
+const supabase = Astro.locals.supabase;
+const { data } = await supabase.auth.getSession();
+if (data?.session) {
+  return Astro.redirect('/');
+}
+---
+
+<AuthLayout>
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-2xl font-bold mb-6 text-center">Sign in</h2>
+    <LoginForm client:only="vue" />
+    <div class="mt-4 text-center">
+      <p class="text-sm text-gray-600">
+        Don't have an account? 
+        <a href="/register" class="text-primary font-medium hover:underline">
+          Register
+        </a>
+      </p>
+    </div>
+  </div>
+</AuthLayout>
