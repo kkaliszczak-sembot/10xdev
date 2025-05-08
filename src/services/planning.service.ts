@@ -83,11 +83,4 @@ export class PlanningService {
       return false;
     }
   }
-
-  /**
-   * Generate PRD for a project
-   */
-  static generatePRD(projectId: string): void {
-    window.location.href = `/api/projects/${projectId}/generate-prd`;
-  }
 }

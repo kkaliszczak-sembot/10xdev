@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useForm } from 'vee-validate';
 import { z } from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
+import { marked } from 'marked';
 import type { ProjectDetailsDTO, UpdateProjectCommand } from '../../types';
 import PlanningSession from './PlanningSession.vue';
 
@@ -40,8 +41,6 @@ const isSaving = ref(false);
 const isEditing = ref(false);
 const error = ref<string | null>(null);
 const saveSuccess = ref(false);
-
-// No longer needed - moved to PlanningSession.vue
 
 // Form validation schema
 const formSchema = toTypedSchema(z.object({
@@ -93,6 +92,17 @@ const formatDate = (dateString: string): string => {
 const projectDescription = computed(() => {
   if (!project.value || !project.value.description) return '';
   return typeof project.value.description === 'string' ? project.value.description : '';
+});
+
+// Computed property for PRD content
+const hasPRD = computed(() => {
+  return Boolean(project.value?.prd);
+});
+
+// Convert PRD Markdown to HTML
+const prdHtml = computed(() => {
+  if (!project.value?.prd) return '';
+  return marked(project.value.prd);
 });
 
 // Get status badge variant based on project status
@@ -509,6 +519,17 @@ watch(() => props.projectId, () => {
       
       <!-- Planning Session Component -->
       <PlanningSession :project-id="props.projectId" />
+      
+      <!-- PRD Section - Only shown when PRD exists -->
+      <Card v-if="hasPRD" class="border-primary/10 shadow-sm mt-8">
+        <CardHeader>
+          <CardTitle class="text-xl font-semibold">Project Requirements Document</CardTitle>
+          <CardDescription>Generated PRD based on your project planning answers</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div class="prose prose-sm max-w-none" v-html="prdHtml"></div>
+        </CardContent>
+      </Card>
     </div>
   </div>
 </template>

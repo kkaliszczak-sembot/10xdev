@@ -113,6 +113,7 @@ export type UpdateProjectCommand = Partial<{
   min_feature_set: string | null;
   out_of_scope: string | null;
   success_criteria: string | null;
+  prd: string | null;
 }>;
 
 

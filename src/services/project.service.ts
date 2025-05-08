@@ -285,7 +285,7 @@ export class ProjectService {
       `## Success Criteria\n${project.success_criteria || 'No success criteria defined.'}`;
     
     // Update project with generated PRD
-    const updatedProject = { ...project, prd };
+    const updatedProject = await this.updateProject(supabase, id, { prd });
     
     return {
       project: updatedProject,
