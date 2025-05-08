@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { OpenRouterService, type OpenRouterMessage, type OpenRouterModel } from './openrouter.service';
-import type { GeneratedQuestion, IQuestionGenerator, ProjectDetails, QuestionAnswer } from '../interfaces/question-generator.interface';
-import { generatePrdPrompt } from './ai-question-prompt';
+import { OpenRouterService, type OpenRouterMessage, type OpenRouterModel } from '@/services/server/openrouter.service';
+import type { GeneratedQuestion, IQuestionGenerator, ProjectDetails, QuestionAnswer } from '@/interfaces/question-generator.interface';
+import { generatePrdPrompt } from '@/services/server/ai-question-prompt';
 
 /**
  * Schema for validating AI-generated question responses

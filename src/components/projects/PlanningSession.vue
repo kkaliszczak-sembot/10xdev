@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import type { AIQuestionDTO } from '../../types';
+import type { AIQuestionDTO } from '@/types';
 import { toast } from 'vue-sonner';
 import ToastProvider from '@/components/ui/toast/ToastProvider.vue';
 
@@ -16,13 +16,11 @@ import PlanningSessionError from './planning/PlanningSessionError.vue';
 import PlanningQuestionsForm from './planning/PlanningQuestionsForm.vue';
 
 // Import services
-import { PlanningService } from '../../services/planning.service';
-import { AIQuestionGeneratorService } from '../../services/ai-question-generator.service';
-import { ProjectClientService } from '../../services/client/project.client.service';
+import { PlanningService } from '@/services/server/planning.service';
+import { ProjectClientService } from '@/services/client/project.client.service';
 
 // Import composables
-import { useAutoSave } from '../../composables/useAutoSave';
-import type { GeneratedQuestion } from '@/interfaces/question-generator.interface';
+import { useAutoSave } from '@/composables/useAutoSave';
 
 // Props
 const props = defineProps<{
@@ -171,7 +169,7 @@ const requestMoreQuestions = async () => {
 };
 
 const generatePRD = () => {
-  PlanningService.generatePRD(props.projectId);
+  ProjectClientService.generatePRD(props.projectId);
 };
 
 // Check for existing questions on mount

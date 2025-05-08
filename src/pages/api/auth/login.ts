@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { AuthService } from '@/services/auth.service';
+import { AuthService } from '@/services/server/auth.service';
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {

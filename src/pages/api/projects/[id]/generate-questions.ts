@@ -1,7 +1,7 @@
 import type { APIContext } from 'astro';
 import { projectIdSchema } from '../schemas';
 import { z } from 'zod';
-import { AIQuestionGeneratorService as QuestionGeneratorService } from '../../../../services/ai-question-generator.service';
+import { AIQuestionGeneratorService as QuestionGeneratorService } from '@/services/server/ai-question-generator.service';
 import type { GeneratedQuestion } from '@/interfaces/question-generator.interface';
 
 /**

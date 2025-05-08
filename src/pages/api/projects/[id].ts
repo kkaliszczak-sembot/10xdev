@@ -1,5 +1,5 @@
 import type { APIContext } from 'astro';
-import { ProjectService } from '../../../services/project.service';
+import { ProjectService } from '@/services/server/project.service';
 import { projectIdSchema, updateProjectSchema } from './schemas';
 
 /**
