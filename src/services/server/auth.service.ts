@@ -1,5 +1,5 @@
 import { supabaseClient } from '@/db/supabase.client';
-import type { AuthError, AuthResponse, User, UserResponse } from '@supabase/supabase-js';
+import type { AuthError, AuthResponse, UserResponse } from '@supabase/supabase-js';
 
 /**
  * Service for handling authentication operations with Supabase

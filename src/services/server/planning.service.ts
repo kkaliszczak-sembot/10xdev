@@ -1,4 +1,4 @@
-import type { AIQuestionDTO } from '../types';
+import type { AIQuestionDTO } from '@/types';
 
 export class PlanningService {
   /**
