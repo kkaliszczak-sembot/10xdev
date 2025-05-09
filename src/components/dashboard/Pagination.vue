@@ -59,9 +59,9 @@ const changePage = (page: number) => {
     <div class="flex items-center justify-center space-x-2 py-4">
       <!-- Previous page button -->
       <button
-        @click="changePage(pagination.current_page - 1)"
         :disabled="pagination.current_page === 1"
         class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-1"
+        @click="changePage(pagination.current_page - 1)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -83,8 +83,8 @@ const changePage = (page: number) => {
       <!-- First page + ellipsis -->
       <template v-if="showFirstPage">
         <button
-          @click="changePage(1)"
           class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10"
+          @click="changePage(1)"
         >
           1
         </button>
@@ -95,9 +95,9 @@ const changePage = (page: number) => {
       <button
         v-for="page in pageNumbers"
         :key="page"
-        @click="changePage(page)"
         class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input h-10 w-10"
         :class="page === pagination.current_page ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-accent hover:text-accent-foreground'"
+        @click="changePage(page)"
       >
         {{ page }}
       </button>
@@ -106,8 +106,8 @@ const changePage = (page: number) => {
       <template v-if="showLastPage">
         <span class="flex h-10 w-10 items-center justify-center">...</span>
         <button
-          @click="changePage(pagination.page_count)"
           class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10"
+          @click="changePage(pagination.page_count)"
         >
           {{ pagination.page_count }}
         </button>
@@ -115,9 +115,9 @@ const changePage = (page: number) => {
 
       <!-- Next page button -->
       <button
-        @click="changePage(pagination.current_page + 1)"
         :disabled="pagination.current_page === pagination.page_count"
         class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-1"
+        @click="changePage(pagination.current_page + 1)"
       >
         <span>Next</span>
         <svg

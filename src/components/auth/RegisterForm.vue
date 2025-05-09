@@ -92,13 +92,13 @@ const handleRegister = async () => {
 
 <template>
   <div>
-    <form v-if="!success" @submit.prevent="handleRegister" autocomplete="on">
+    <form v-if="!success" autocomplete="on" @submit.prevent="handleRegister">
         <div class="mb-4">
           <Label for="name" class="mb-2">Name</Label>
           <Input
             id="name"
-            type="text"
             v-model="name"
+            type="text"
             placeholder="Your name"
             autocomplete="name"
             :disabled="isLoading"
@@ -111,8 +111,8 @@ const handleRegister = async () => {
           <Label for="email" class="mb-2">Email</Label>
           <Input
             id="email"
-            type="email"
             v-model="email"
+            type="email"
             placeholder="you@email.com"
             autocomplete="email"
             :disabled="isLoading"
@@ -125,8 +125,8 @@ const handleRegister = async () => {
           <Label for="password" class="mb-2">Password</Label>
           <Input
             id="password"
-            type="password"
             v-model="password"
+            type="password"
             placeholder="At least 8 characters"
             autocomplete="new-password"
             :disabled="isLoading"

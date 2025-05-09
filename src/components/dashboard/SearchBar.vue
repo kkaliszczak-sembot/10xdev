@@ -42,7 +42,7 @@ const handleSubmit = (e: Event) => {
 </script>
 
 <template>
-  <form @submit="handleSubmit" class="relative">
+  <form class="relative" @submit="handleSubmit">
     <div class="relative flex w-full max-w-sm items-center space-x-2">
       <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500">
@@ -52,8 +52,8 @@ const handleSubmit = (e: Event) => {
       </div>
       
       <Input
-        type="search"
         v-model="searchQuery"
+        type="search"
         class="pl-10 pr-10"
         placeholder="Search projects..."
         aria-label="Search projects"
@@ -62,8 +62,8 @@ const handleSubmit = (e: Event) => {
       <button
         v-if="searchQuery"
         type="button"
-        @click="clearSearch"
         class="absolute inset-y-0 right-3 flex items-center"
+        @click="clearSearch"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 hover:text-gray-700">
           <line x1="18" y1="6" x2="6" y2="18"/>

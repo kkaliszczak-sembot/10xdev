@@ -14,8 +14,8 @@ const emit = defineEmits<{
     </p>
     <Button 
       size="lg" 
-      @click="emit('startSession')"
       class="px-8"
+      @click="emit('startSession')"
     >
       Start Planning Session
     </Button>

@@ -14,5 +14,6 @@ export interface AppLocals {
 
 // Augment the Astro namespace to include our custom locals
 declare module 'astro' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface Locals extends AppLocals {}
 }

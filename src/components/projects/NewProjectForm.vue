@@ -159,7 +159,7 @@ onUnmounted(() => {
       <p>{{ submitError }}</p>
     </div>
     
-    <form @submit="onSubmit" class="space-y-6">
+    <form class="space-y-6" @submit="onSubmit">
       <!-- Project name field -->
       <div class="space-y-2">
         <label for="name" class="text-sm font-medium leading-none">Project Name <span class="text-destructive">*</span></label>
@@ -193,8 +193,8 @@ onUnmounted(() => {
         <Button 
           type="button" 
           variant="outline" 
-          @click="handleCancel"
           :disabled="isSubmitting"
+          @click="handleCancel"
         >
           Cancel
         </Button>

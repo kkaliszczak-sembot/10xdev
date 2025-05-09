@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import type { ProjectListQueryParams } from '../../types';
 import type { Tables } from '../../db/database.types';
 import { Button } from '@/components/ui/button';
+import type { ProjectStatus } from '@/types/project.types';
 
 // Define emits
 const emit = defineEmits<{
@@ -62,7 +63,7 @@ const emitFilterChange = () => {
   };
   
   if (status.value) {
-    filters.status = status.value as any;
+    filters.status = status.value as ProjectStatus;
   }
   
   emit('filter-change', filters);
@@ -78,8 +79,8 @@ const emitFilterChange = () => {
         <select
           id="status-filter"
           v-model="status"
-          @change="handleStatusChange"
           class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          @change="handleStatusChange"
         >
           <option v-for="option in statusOptions" :key="option.value" :value="option.value">
             {{ option.label }}
@@ -93,8 +94,8 @@ const emitFilterChange = () => {
         <select
           id="sort-field"
           v-model="sortField"
-          @change="handleSortFieldChange"
           class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          @change="handleSortFieldChange"
         >
           <option v-for="option in sortFieldOptions" :key="option.value" :value="option.value">
             {{ option.label }}
@@ -106,9 +107,9 @@ const emitFilterChange = () => {
       <div class="flex-1">
         <label class="block text-sm font-medium mb-2">Order</label>
         <Button 
-          @click="toggleSortOrder"
           variant="outline"
           class="w-full justify-between"
+          @click="toggleSortOrder"
         >
           <span>{{ sortOrderLabel }}</span>
           <svg 
