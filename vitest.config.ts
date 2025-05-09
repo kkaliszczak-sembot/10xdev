@@ -12,7 +12,7 @@ export default defineConfig({
     exclude: ['e2e/**', 'node_modules/**'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['json', 'json-summary'],
       exclude: ['node_modules/', 'tests/', 'e2e/', 'public/']
     },
     alias: {
