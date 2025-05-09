@@ -324,9 +324,9 @@ fetchProject();
     <div v-else-if="error" class="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md mb-6">
       <p class="mb-2">{{ error }}</p>
       <Button 
-        @click="fetchProject" 
-        variant="destructive"
+        variant="destructive" 
         size="sm"
+        @click="fetchProject"
       >
         Try Again
       </Button>
@@ -336,7 +336,7 @@ fetchProject();
     <div v-else-if="project" class="space-y-6">
       <!-- Project header card with editable title and description -->
       <Card class="overflow-hidden border-primary/10 shadow-sm">
-        <form @submit.prevent="saveProject()" class="w-full">
+        <form class="w-full" @submit.prevent="saveProject()">
           <CardHeader class="pb-2">
             <div class="flex justify-between items-start">
               <div class="w-full pr-4">
@@ -344,8 +344,8 @@ fetchProject();
                 <div class="mb-2">
                   <div 
                     v-if="!isEditing" 
-                    @click="startEditing"
                     class="text-2xl font-bold px-2 -ml-2 cursor-pointer hover:bg-muted/30 rounded transition-colors"
+                    @click="startEditing"
                   >
                     {{ project.name || 'Untitled Project' }}
                   </div>
@@ -363,8 +363,8 @@ fetchProject();
                 <div>
                   <div 
                     v-if="!isEditing" 
-                    @click="startEditing"
                     class="text-sm text-muted-foreground px-2 -ml-2 cursor-pointer hover:bg-muted/30 rounded transition-colors min-h-[40px] py-1"
+                    @click="startEditing"
                   >
                     <p v-if="projectDescription">{{ projectDescription }}</p>
                     <p v-else class="italic text-muted-foreground/70">Click to add a description</p>
@@ -405,8 +405,8 @@ fetchProject();
                 type="button" 
                 size="sm" 
                 variant="outline" 
-                @click="startEditing"
                 class="flex items-center ml-3"
+                @click="startEditing"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>

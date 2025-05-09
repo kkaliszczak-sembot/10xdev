@@ -76,13 +76,13 @@ const handleLogin = async () => {
 
 <template>
   <div>
-    <form @submit.prevent="handleLogin" autocomplete="on">
+    <form autocomplete="on" @submit.prevent="handleLogin">
         <div class="mb-4">
           <Label for="email" class="mb-2">Email</Label>
           <Input
             id="email"
-            type="email"
             v-model="email"
+            type="email"
             placeholder="you@email.com"
             autocomplete="email"
             :disabled="isLoading"
@@ -95,8 +95,8 @@ const handleLogin = async () => {
           <Label for="password" class="mb-2">Password</Label>
           <Input
             id="password"
-            type="password"
             v-model="password"
+            type="password"
             placeholder="Your password"
             autocomplete="current-password"
             :disabled="isLoading"

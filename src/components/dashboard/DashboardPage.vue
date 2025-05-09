@@ -147,9 +147,9 @@ onMounted(() => {
     <div v-else-if="error" class="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md mb-6">
       <p class="mb-2">{{ error }}</p>
       <Button 
-        @click="fetchProjects" 
-        variant="destructive"
+        variant="destructive" 
         size="sm"
+        @click="fetchProjects"
       >
         Try Again
       </Button>

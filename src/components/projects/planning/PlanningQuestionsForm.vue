@@ -65,9 +65,9 @@ const submitForm = () => {
       <Button 
         type="button" 
         variant="outline" 
-        @click="emit('requestMoreQuestions')"
         :disabled="isSubmitting || isLoadingMore"
         :class="{ 'opacity-50 cursor-not-allowed': isLoadingMore }"
+        @click="emit('requestMoreQuestions')"
       >
         Ask More Questions
       </Button>
