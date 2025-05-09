@@ -69,7 +69,7 @@ const saveAnswers = async () => {
 };
 
 // Use the auto-save composable
-const { isAutoSaving, lastAutoSaveTime } = useAutoSave(planningAnswers, saveAnswers);
+const { isAutoSaving, lastAutoSaveTime } = useAutoSave(planningAnswers, saveAnswers, { debounceTime: 1000, showNotifications: true });
 
 // Planning session functions
 const startPlanningSession = async () => {
@@ -270,11 +270,11 @@ onMounted(() => {
       
       <!-- Auto-save indicator -->
       <div v-if="isAutoSaving" class="text-xs text-muted-foreground mt-2 text-right">
-        Saving...
-      </div>
+          Saving...
+        </div>
       <div v-else-if="lastAutoSaveTime" class="text-xs text-muted-foreground mt-2 text-right">
-        Last saved: {{ new Date(lastAutoSaveTime).toLocaleTimeString() }}
-      </div>
+          Last saved: {{ new Date(lastAutoSaveTime).toLocaleTimeString() }}
+        </div>
     </CardContent>
   </Card>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { AIQuestionDTO } from '@/types';
 import {
   FormField,
@@ -17,10 +18,11 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
 }>();
 
-const updateAnswer = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  emit('update:modelValue', target.value);
-};
+// Create a computed property with getter and setter for v-model
+const answer = computed({
+  get: () => props.modelValue,
+  set: (value: string) => emit('update:modelValue', value)
+});
 </script>
 
 <template>
@@ -30,8 +32,7 @@ const updateAnswer = (event: Event) => {
         <FormLabel class="text-lg font-medium">{{ question.sequence_number }}. {{ question.question }}</FormLabel>
         <FormControl>
           <Textarea
-            :value="modelValue"
-            @input="updateAnswer"
+            v-model="answer"
             placeholder="Your answer..."
             class="min-h-[60px] mt-2"
           />

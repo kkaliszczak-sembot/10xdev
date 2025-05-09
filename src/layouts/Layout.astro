@@ -20,6 +20,7 @@ const isAuthPage = ['/login', '/register'].includes(pathname);
 		{!isAuthPage && <Header client:load />}
 		<slot />
 		<Toaster 
+			client:load
 			richColors 
 			closeButton 
 			position="top-right" 

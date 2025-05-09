@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ToastService } from '@/services/client/toast.service';
 
 // Props
 const props = defineProps<{
@@ -41,7 +42,6 @@ const isLoading = ref(true);
 const isSaving = ref(false);
 const isEditing = ref(false);
 const error = ref<string | null>(null);
-const saveSuccess = ref(false);
 
 // Form validation schema
 const formSchema = toTypedSchema(z.object({
@@ -210,7 +210,6 @@ const cancelEditing = () => {
 // Save project changes
 const saveProject = async () => {
   isSaving.value = true;
-  saveSuccess.value = false;
   error.value = null;
   
   // Validate the form first
@@ -243,9 +242,9 @@ const saveProject = async () => {
       throw new Error(`Failed to update project: ${response.statusText}`);
     }
     
+    ToastService.success('Project updated successfully');
     const updatedProject = await response.json();
     project.value = updatedProject;
-    saveSuccess.value = true;
     isEditing.value = false; // Exit editing mode after successful save
     
     // Update form values to reflect the latest data
@@ -257,11 +256,6 @@ const saveProject = async () => {
       out_of_scope: updatedProject.out_of_scope || '',
       success_criteria: updatedProject.success_criteria || '',
     });
-    
-    // Hide success message after 3 seconds
-    setTimeout(() => {
-      saveSuccess.value = false;
-    }, 3000);
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'An error occurred';
     console.error('Error updating project:', err);
@@ -438,11 +432,6 @@ fetchProject();
           </CardFooter>
         </form>
       </Card>
-      
-      <!-- Success message -->
-      <div v-if="saveSuccess" class="bg-green-100 border border-green-200 text-green-800 px-4 py-3 rounded-md mb-6">
-        Project saved successfully!
-      </div>
       
       <!-- Project details form -->
       <Card class="border-primary/10 shadow-sm">

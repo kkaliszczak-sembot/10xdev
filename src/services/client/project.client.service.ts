@@ -1,4 +1,4 @@
-import type { ProjectDetailsDTO, ProjectListQueryParams, ProjectListResponseDTO, CreateProjectCommand, UpdateProjectCommand, DeleteResponseDTO, GeneratedPRDDTO } from '../../types';
+import type { ProjectDetailsDTO, ProjectListQueryParams, ProjectListResponseDTO, CreateProjectCommand, UpdateProjectCommand, DeleteResponseDTO, GeneratedPRDDTO } from '@/types';
 
 /**
  * Client-side service for project operations
