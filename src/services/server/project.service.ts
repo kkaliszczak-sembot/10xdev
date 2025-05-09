@@ -6,7 +6,7 @@ import type {
   CreateProjectCommand, 
   UpdateProjectCommand,
   DeleteResponseDTO
-} from '../types';
+} from '@/types';
 
 /**
  * Service for handling project-related operations

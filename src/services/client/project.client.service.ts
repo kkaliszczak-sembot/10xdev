@@ -1,4 +1,4 @@
-import type { ProjectDetailsDTO, ProjectListQueryParams, ProjectListResponseDTO, CreateProjectCommand, UpdateProjectCommand, DeleteResponseDTO } from '../../types';
+import type { ProjectDetailsDTO, ProjectListQueryParams, ProjectListResponseDTO, CreateProjectCommand, UpdateProjectCommand, DeleteResponseDTO, GeneratedPRDDTO } from '../../types';
 
 /**
  * Client-side service for project operations
@@ -153,12 +153,24 @@ export class ProjectClientService {
    * Generate PRD for a project
    * @param id - Project ID
    */
-  static generatePRD(id: string): void {
+  static async generatePRD(id: string): Promise<GeneratedPRDDTO> {
     if (!id) {
       throw new Error('Project ID is required');
     }
     
-    // Redirect to the PRD generation endpoint
-    window.location.href = `/api/projects/${id}/generate-prd`;
+    try {
+      const response = await fetch(`/api/projects/${id}/generate-prd`, {
+        method: 'POST'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to generate PRD: ${response.statusText}`);
+      }
+      
+      return await response.json();
+    } catch (err) {
+      console.error('Error generating PRD:', err);
+      throw new Error(err instanceof Error ? err.message : 'Failed to generate PRD');
+    }
   }
 }
