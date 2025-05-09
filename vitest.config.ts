@@ -9,10 +9,11 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    exclude: ['e2e/**', 'node_modules/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'tests/'],
+      exclude: ['node_modules/', 'tests/', 'e2e/', 'public/'],
       thresholds: {
         statements: 80,
         branches: 70,
