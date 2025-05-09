@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import type { ProjectListQueryParams } from '../../types';
 import type { Tables } from '../../db/database.types';
 import { Button } from '@/components/ui/button';
+import type { ProjectStatus } from '@/types/project.types';
 
 // Define emits
 const emit = defineEmits<{
@@ -62,7 +63,7 @@ const emitFilterChange = () => {
   };
   
   if (status.value) {
-    filters.status = status.value as any;
+    filters.status = status.value as ProjectStatus;
   }
   
   emit('filter-change', filters);

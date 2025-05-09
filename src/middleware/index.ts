@@ -4,6 +4,7 @@ import type { User } from '@supabase/supabase-js';
 
 // Define the custom properties for Astro's Locals interface
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace App {
     interface Locals {
       supabase: typeof supabaseClient;
@@ -65,6 +66,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     
     // For project-specific endpoints, verify ownership
     if (pathname.startsWith('/api/projects/')) {
+      // eslint-disable-next-line no-useless-escape
       const projectIdMatch = pathname.match(/^\/api\/projects\/([^\/]+)/);
       
       // Skip if not a project-specific endpoint or it's the listing endpoint
