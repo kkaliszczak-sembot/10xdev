@@ -1,3 +1,4 @@
+/* eslint-disable */
 declare module 'astro:content' {
 	export interface RenderResult {
 		Content: import('astro/runtime/server/index.js').AstroComponentFactory;
