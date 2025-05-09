@@ -58,6 +58,9 @@ jobs:
     needs: [unit-test]
     runs-on: ubuntu-latest
     if: ${{ always() && (needs.unit-test.result == 'success') }}
+    permissions:
+      pull-requests: write
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -90,17 +93,17 @@ jobs:
               
               // Create a formatted comment
               const comment = `
-              ## 🚀 Pull Request Checks Completed Successfully
+              ## Pull Request Checks Completed Successfully
 
-              ### 📊 Test Results
+              ### Test Results
               
-              #### ✅ Linting
+              #### Linting
               All linting checks passed successfully.
               
-              #### ✅ Unit Tests
+              #### Unit Tests
               All unit tests passed successfully.
               
-              ### 📈 Coverage Summary
+              ### Coverage Summary
               
               #### Unit Test Coverage
               ${unitCoverageSummary}
@@ -120,7 +123,7 @@ jobs:
               
               // Create a fallback comment
               const fallbackComment = `
-              ## 🚀 Pull Request Checks Completed Successfully
+              ## Pull Request Checks Completed Successfully
               
               All checks have passed. Coverage reports are available as artifacts.
               
