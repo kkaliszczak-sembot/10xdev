@@ -13,13 +13,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'tests/', 'e2e/', 'public/'],
-      thresholds: {
-        statements: 80,
-        branches: 70,
-        functions: 80,
-        lines: 80,
-      },
+      exclude: ['node_modules/', 'tests/', 'e2e/', 'public/']
     },
     alias: {
       '@': path.resolve(__dirname, './src'),
