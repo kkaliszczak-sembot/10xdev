@@ -3,6 +3,8 @@ import { ref, computed } from 'vue';
 import type { AIQuestionDTO } from '@/types';
 import { Button } from '@/components/ui/button';
 import PlanningQuestionItem from './PlanningQuestionItem.vue';
+// Import toast for notifications
+import { ToastService } from '@/services/client/toast.service';
 
 const props = defineProps<{
   questions: AIQuestionDTO[];
@@ -28,10 +30,16 @@ const updateAnswer = (questionId: string, value: string) => {
 
 // Count of available questions
 const questionCount = computed(() => props.questions.length);
+
+// Handle form submission
+const submitForm = () => {
+  ToastService.info('Generating PRD...');
+  emit('generatePRD');
+};
 </script>
 
 <template>
-  <form @submit.prevent="emit('generatePRD')">
+  <form @submit.prevent="submitForm">
     <div class="text-sm text-muted-foreground mb-4">
       {{ questionCount }} questions available
     </div>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import { useForm } from 'vee-validate';
 import { z } from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
 import { marked } from 'marked';
 import type { ProjectDetailsDTO, UpdateProjectCommand } from '../../types';
 import PlanningSession from './PlanningSession.vue';
+import { EventBusService } from '@/services/client/event-bus.service';
 
 // UI Components
 import {
@@ -275,6 +276,32 @@ const saveProject = async () => {
 watch(() => props.projectId, () => {
   fetchProject();
 }, { immediate: true });
+
+// Listen for PRD updates from the EventBusService
+const unsubscribePrdUpdates = () => {
+  // No explicit unsubscribe needed as we're using Vue's reactivity system
+};
+
+// Setup listener for PRD updates
+onMounted(() => {
+  // Watch for PRD generated events
+  watch(EventBusService.getPrdGeneratedEvent(), (event) => {
+    if (event && event.projectId === props.projectId) {
+      // Update the project data with the new PRD content
+      if (project.value) {
+        project.value.prd = event.prd;
+      }
+    }
+  });
+});
+
+// Clean up event listeners when component is unmounted
+onUnmounted(() => {
+  unsubscribePrdUpdates();
+});
+
+// Fetch project on component mount
+fetchProject();
 </script>
 
 <template>

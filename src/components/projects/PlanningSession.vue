@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import type { AIQuestionDTO } from '@/types';
-import { toast } from 'vue-sonner';
-import ToastProvider from '@/components/ui/toast/ToastProvider.vue';
+import { ToastService } from '@/services/client/toast.service';
 
 // UI Components
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,6 +17,7 @@ import PlanningQuestionsForm from './planning/PlanningQuestionsForm.vue';
 // Import services
 import { PlanningService } from '@/services/server/planning.service';
 import { ProjectClientService } from '@/services/client/project.client.service';
+import { EventBusService } from '@/services/client/event-bus.service';
 
 // Import composables
 import { useAutoSave } from '@/composables/useAutoSave';
@@ -93,12 +93,12 @@ const startPlanningSession = async () => {
       planningAnswers.value[question.id] = '';
     });
     
-    toast.success(`${newQuestions.length} questions generated!`);
+    ToastService.success(`${newQuestions.length} questions generated!`);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'An error occurred';
     planningError.value = errorMessage;
     console.error('Error starting planning session:', err);
-    toast.error(errorMessage);
+    ToastService.error(errorMessage);
   } finally {
     isLoadingQuestions.value = false;
   }
@@ -135,11 +135,11 @@ const requestMoreQuestions = async () => {
       planningAnswers.value[question.id] = '';
     });
     
-    toast.success(`${generatedQuestions.length} new AI-generated questions added!`);
+    ToastService.success(`${generatedQuestions.length} new AI-generated questions added!`);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Failed to get more questions';
     console.error('Error requesting more questions:', err);
-    toast.error(errorMessage);
+    ToastService.error(errorMessage);
     
     // Fallback to standard question generation if AI fails
     try {
@@ -159,7 +159,7 @@ const requestMoreQuestions = async () => {
         planningAnswers.value[question.id] = '';
       });
       
-      toast.success(`${filteredNewQuestions.length} new questions added (fallback mode)`);
+      ToastService.success(`${filteredNewQuestions.length} new questions added (fallback mode)`);
     } catch (fallbackErr) {
       console.error('Fallback question generation also failed:', fallbackErr);
     }
@@ -168,8 +168,32 @@ const requestMoreQuestions = async () => {
   }
 };
 
-const generatePRD = () => {
-  ProjectClientService.generatePRD(props.projectId);
+// Generate PRD based on answered questions
+const generatePRD = async () => {
+  isSubmittingAnswers.value = true;
+  
+  try {
+    // Save answers first to ensure all data is up-to-date
+    await saveAnswers();
+    
+    // Generate PRD
+    const result = await ProjectClientService.generatePRD(props.projectId);
+    
+    if (result && result.status === 'success' && result.project && result.project.prd) {
+      // Emit event through the event bus
+      EventBusService.emitPrdGenerated(props.projectId, result.project.prd);
+      
+      ToastService.success('PRD generated successfully!');
+    } else {
+      throw new Error('Failed to generate PRD');
+    }
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Failed to generate PRD';
+    console.error('Error generating PRD:', err);
+    ToastService.error(errorMessage);
+  } finally {
+    isSubmittingAnswers.value = false;
+  }
 };
 
 // Check for existing questions on mount
@@ -201,9 +225,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- Include ToastProvider to ensure toast notifications work -->
-  <ToastProvider />
-  
   <Card class="border-primary/10 shadow-sm mt-8">
     <PlanningSessionHeader />
     <CardContent class="pt-6">
