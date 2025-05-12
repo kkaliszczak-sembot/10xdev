@@ -1,0 +1,9 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "10x-project-manager",
+    "compatibility_date": "2025-05-12",
+    "main": "./dist/_worker.js",
+    "assets": {
+      "directory": "./dist"
+    }
+}

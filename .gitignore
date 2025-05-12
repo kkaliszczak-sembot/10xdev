@@ -3,3 +3,6 @@ node_modules/
 test-results/.last-run.json
 playwright-report/
 .env.testing
+dist/
+.astro/
+.wrangler/
