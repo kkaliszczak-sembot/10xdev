@@ -9,6 +9,7 @@ Project Manager is an AI-powered web application that helps users transform roug
 ---
 
 ## Table of Contents
+
 1. [Project Description](#project-description)
 2. [Tech Stack](#tech-stack)
 3. [Getting Started Locally](#getting-started-locally)
@@ -20,6 +21,7 @@ Project Manager is an AI-powered web application that helps users transform roug
 ---
 
 ## Project Description
+
 Project Manager is a web application designed to guide users from initial project ideas to comprehensive PRDs. Leveraging AI, it iteratively asks clarifying questions and helps structure project documentation, making the process accessible and efficient for both technical and non-technical users.
 
 ---
@@ -27,6 +29,7 @@ Project Manager is a web application designed to guide users from initial projec
 ## Tech Stack
 
 **Frontend:**
+
 - Astro 5: Fast, minimal-JS static site generator
 - Vue 3: Interactive UI components
 - TypeScript 5: Static typing and IDE support
@@ -34,12 +37,15 @@ Project Manager is a web application designed to guide users from initial projec
 - Shadcn/ui: Accessible UI component library
 
 **Backend:**
+
 - Supabase: Open-source backend-as-a-service (PostgreSQL DB, SDK, authentication)
 
 **AI Integration:**
+
 - Openrouter.ai: Access to multiple AI models (OpenAI, Anthropic, Google, etc.), with API key cost controls
 
 **CI/CD & Hosting:**
+
 - GitHub Actions: Automated pipelines
 - Custom VPS: Dockerized deployment
 
@@ -48,44 +54,45 @@ Project Manager is a web application designed to guide users from initial projec
 ## Getting Started Locally
 
 ### Prerequisites
+
 - **Node.js:** v22.14.0 ([`.nvmrc`](./.nvmrc))
-- **npm** (comes with Node.js)
+- **bun**
 
 ### Installation
+
 ```bash
 # Clone the repository
 git clone https://github.com/kkaliszczak-sembot/10x-project-manager.git
 cd 10x-project-manager
 
-# Use correct Node version
-nvm use
-
 # Install dependencies
-npm install
+bun install
 ```
 
 ### Running the Project
+
 ```bash
 # Start the development server
-npm run dev
+bun run dev
 
 # Build for production
-npm run build
+bun run build
 
 # Preview production build
-npm run preview
+bun run preview
 ```
 
 ---
 
 ## Available Scripts
 
-- `npm run dev` — Start the Astro development server
-- `npm run build` — Build the application for production
-- `npm run preview` — Preview the built application locally
-- `npm run astro` — Run Astro CLI commands
+- `bun run dev` — Start the Astro development server
+- `bun run build` — Build the application for production
+- `bun run preview` — Preview the built application locally
+- `bun run astro` — Run Astro CLI commands
 
 **Linting & Formatting:**
+
 - ESLint and Prettier are configured with lint-staged and Husky for code quality
 
 ---
@@ -93,6 +100,7 @@ npm run preview
 ## Project Scope
 
 ### Core Features
+
 - User authentication (registration, login, password reset) with email and password
 - User profile management (name, avatar, registration date)
 - Project management (create, read, update, delete projects)
@@ -101,11 +109,13 @@ npm run preview
 - Editable, AI-generated PRD documents
 
 ### Boundaries
+
 - No project sharing between accounts
 - No multimedia (e.g., images) support
 - Web-only application (no mobile/native clients)
 
 ### Example User Stories
+
 - Registration and login with validation
 - Password reset via email
 - Project CRUD operations
@@ -131,9 +141,10 @@ This project is licensed under the [MIT License](./LICENSE). It is open source a
 ---
 
 ## Additional Resources
+
 - [Product Requirements Document (PRD)](./ai/prd.md)
 - [Tech Stack Overview](./ai/tech-stack.md)
 
 ---
 
-*For questions or contributions, please open an issue or submit a pull request.*
+_For questions or contributions, please open an issue or submit a pull request._
