@@ -47,7 +47,7 @@ const saveAnswers = async () => {
   if (!planningQuestions.value.length || !hasAnswers) {
     return false;
   }
-  
+
   try {
     // Format answers for submission
     const formattedAnswers = Object.entries(planningAnswers.value)
@@ -60,7 +60,7 @@ const saveAnswers = async () => {
           answer
         };
       });
-    
+
     return await PlanningService.saveAnswers(props.projectId, formattedAnswers);
   } catch (err) {
     console.error('Auto-save error:', err);
@@ -80,19 +80,19 @@ const startPlanningSession = async () => {
   planningQuestions.value = [];
   planningAnswers.value = {};
   submissionSuccess.value = false;
-  
+
   try {
     // Generate new questions
     const newQuestions = await PlanningService.generateQuestions(props.projectId, 5);
-    
+
     // Add questions to state
     planningQuestions.value = newQuestions;
-    
+
     // Initialize answers for new questions
     newQuestions.forEach((question: AIQuestionDTO) => {
       planningAnswers.value[question.id] = '';
     });
-    
+
     ToastService.success(`${newQuestions.length} questions generated!`);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'An error occurred';
@@ -107,58 +107,58 @@ const startPlanningSession = async () => {
 const requestMoreQuestions = async () => {
   isLoadingMoreQuestions.value = true;
   planningError.value = null;
-  const newQuestionsAmount = 3;
+  const newQuestionsAmount = 5;
   skeletonCount.value = newQuestionsAmount;
-  
+
   try {
     // Calculate the next sequence number
     const startSequenceNumber = (planningQuestions.value.at(-1)?.sequence_number ?? 0) + 1;
-    
+
     // Get project details for context using the client-side service
     const projectDetails = await ProjectClientService.getProjectById(props.projectId);
-    
+
     if (!projectDetails) {
       throw new Error('Failed to fetch project details');
     }
-    
+
     // Generate more questions using AI
     const generatedQuestions = await PlanningService.generateQuestions(
       props.projectId,
       newQuestionsAmount,
       startSequenceNumber
     );
-    
+
     planningQuestions.value = [...planningQuestions.value, ...generatedQuestions];
-    
+
     // Initialize answers for new questions
     generatedQuestions.forEach((question: AIQuestionDTO) => {
       planningAnswers.value[question.id] = '';
     });
-    
+
     ToastService.success(`${generatedQuestions.length} new AI-generated questions added!`);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Failed to get more questions';
     console.error('Error requesting more questions:', err);
     ToastService.error(errorMessage);
-    
+
     // Fallback to standard question generation if AI fails
     try {
       const startSequenceNumber = (planningQuestions.value.at(-1)?.sequence_number ?? 0) + 1;
       const newQuestions = await PlanningService.generateQuestions(
-        props.projectId, 
-        newQuestionsAmount, 
+        props.projectId,
+        newQuestionsAmount,
         startSequenceNumber
       );
-      
+
       const existingIds = planningQuestions.value.map((q: AIQuestionDTO) => q.id);
       const filteredNewQuestions = newQuestions.filter((q: AIQuestionDTO) => !existingIds.includes(q.id));
-      
+
       planningQuestions.value = [...planningQuestions.value, ...filteredNewQuestions];
-      
+
       filteredNewQuestions.forEach((question: AIQuestionDTO) => {
         planningAnswers.value[question.id] = '';
       });
-      
+
       ToastService.success(`${filteredNewQuestions.length} new questions added (fallback mode)`);
     } catch (fallbackErr) {
       console.error('Fallback question generation also failed:', fallbackErr);
@@ -171,18 +171,18 @@ const requestMoreQuestions = async () => {
 // Generate PRD based on answered questions
 const generatePRD = async () => {
   isSubmittingAnswers.value = true;
-  
+
   try {
     // Save answers first to ensure all data is up-to-date
     await saveAnswers();
-    
+
     // Generate PRD
     const result = await ProjectClientService.generatePRD(props.projectId);
-    
+
     if (result && result.status === 'success' && result.project && result.project.prd) {
       // Emit event through the event bus
       EventBusService.emitPrdGenerated(props.projectId, result.project.prd);
-      
+
       ToastService.success('PRD generated successfully!');
     } else {
       throw new Error('Failed to generate PRD');
@@ -200,16 +200,16 @@ const generatePRD = async () => {
 const fetchExistingQuestions = async () => {
   try {
     const questions = await PlanningService.fetchExistingQuestions(props.projectId);
-    
+
     if (questions && questions.length > 0) {
       // If questions exist, load them and activate the planning session
       planningQuestions.value = questions;
-      
+
       // Initialize answers for questions
       questions.forEach((question: AIQuestionDTO) => {
         planningAnswers.value[question.id] = question.answer || '';
       });
-      
+
       // Activate the planning session if questions exist
       isPlanningSessionActive.value = true;
     }
@@ -229,23 +229,15 @@ onMounted(() => {
     <PlanningSessionHeader />
     <CardContent class="pt-6">
       <!-- Initial loading state - only shown when starting a new session -->
-      <PlanningSessionLoading 
-        v-if="isLoadingQuestions && planningQuestions.length === 0"
-      />
-      
+      <PlanningSessionLoading v-if="isLoadingQuestions && planningQuestions.length === 0" />
+
       <!-- Error state -->
-      <PlanningSessionError
-        v-else-if="planningError"
-        :error-message="planningError"
-        @retry="startPlanningSession"
-      />
-      
+      <PlanningSessionError v-else-if="planningError" :error-message="planningError" @retry="startPlanningSession" />
+
       <!-- Intro screen when no planning session is active and no questions exist -->
-      <PlanningSessionIntro 
-        v-else-if="!isPlanningSessionActive && planningQuestions.length === 0"
-        @start-session="startPlanningSession"
-      />
-      
+      <PlanningSessionIntro v-else-if="!isPlanningSessionActive && planningQuestions.length === 0"
+        @start-session="startPlanningSession" />
+
       <!-- Questions form -->
       <div v-else>
         <div v-if="planningQuestions.length === 0" class="text-center py-6">
@@ -254,27 +246,21 @@ onMounted(() => {
             Retry
           </Button>
         </div>
-        
+
         <!-- Questions form when questions are available -->
-        <PlanningQuestionsForm
-          v-else
-          :questions="planningQuestions"
-          :answers="planningAnswers"
-          :is-loading-more="isLoadingMoreQuestions"
-          :is-submitting="isSubmittingAnswers"
-          @update:answers="planningAnswers = $event"
-          @request-more-questions="requestMoreQuestions"
-          @generate-p-r-d="generatePRD"
-        />
+        <PlanningQuestionsForm v-else :questions="planningQuestions" :answers="planningAnswers"
+          :is-loading-more="isLoadingMoreQuestions" :is-submitting="isSubmittingAnswers"
+          @update:answers="planningAnswers = $event" @request-more-questions="requestMoreQuestions"
+          @generate-p-r-d="generatePRD" />
       </div>
-      
+
       <!-- Auto-save indicator -->
       <div v-if="isAutoSaving" class="text-xs text-muted-foreground mt-2 text-right">
-          Saving...
-        </div>
+        Saving...
+      </div>
       <div v-else-if="lastAutoSaveTime" class="text-xs text-muted-foreground mt-2 text-right">
-          Last saved: {{ new Date(lastAutoSaveTime).toLocaleTimeString() }}
-        </div>
+        Last saved: {{ new Date(lastAutoSaveTime).toLocaleTimeString() }}
+      </div>
     </CardContent>
   </Card>
 </template>

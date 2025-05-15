@@ -26,6 +26,7 @@ export interface IQuestionGenerator {
   /**
    * Generate questions based on project context
    * @param projectDetails - Project details to contextualize questions
+   * @param apiKey - API key for authentication
    * @param count - Number of questions to generate
    * @param startSequenceNumber - Starting sequence number for questions
    * @param previousQuestionsAnswers - Optional array of previous questions and answers to consider
@@ -33,6 +34,7 @@ export interface IQuestionGenerator {
    */
   generateQuestions(
     projectDetails: ProjectDetails, 
+    apiKey: string, 
     count?: number, 
     startSequenceNumber?: number,
     previousQuestionsAnswers?: QuestionAnswer[]

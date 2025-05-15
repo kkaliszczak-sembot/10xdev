@@ -1,4 +1,5 @@
 import type { APIContext } from 'astro';
+import { getSecret } from 'astro:env/server';
 import { projectIdSchema } from '../schemas';
 import { AIQuestionGeneratorService as QuestionGeneratorService } from '@/services/server/ai-question-generator.service';
 import type { GeneratedQuestion } from '@/interfaces/question-generator.interface';
@@ -74,6 +75,18 @@ export async function POST({ params, locals, url }: APIContext) {
     }
 
     const questionGeneratorService = new QuestionGeneratorService;
+
+    const apiKey = getSecret('OPEN_ROUTER_KEY');
+
+    if (!apiKey) {
+      console.error('OPEN_ROUTER_KEY is not configured or accessible in the environment.');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Server configuration error: API key for question generation is missing.'
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
     
     // Generate questions using the QuestionGeneratorService
     const generatedQuestions = await questionGeneratorService.generateQuestions(
@@ -84,7 +97,8 @@ export async function POST({ params, locals, url }: APIContext) {
         min_feature_set: project.min_feature_set || '',
         out_of_scope: project.out_of_scope || '',
         success_criteria: project.success_criteria || ''
-      }, 
+      },
+      apiKey,
       count, 
       startSequenceNumber
     );

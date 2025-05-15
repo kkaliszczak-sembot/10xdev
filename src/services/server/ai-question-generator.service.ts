@@ -1,16 +1,12 @@
 import { z } from 'zod';
-import { OpenRouterService, type OpenRouterMessage, type OpenRouterModel } from '@/services/server/openrouter.service';
+import { OpenRouterService, type OpenRouterMessage, type OpenRouterModel } from './openrouter.service';
 import type { GeneratedQuestion, IQuestionGenerator, ProjectDetails, QuestionAnswer } from '@/interfaces/question-generator.interface';
 import { generatePrdPrompt } from '@/services/server/ai-question-prompt';
 
 /**
  * Schema for validating AI-generated question responses
  */
-const aiQuestionResponseSchema = z.object({
-  questions: z.array(z.object({
-    question: z.string()
-  }))
-});
+const aiQuestionResponseSchema = z.array(z.string());
 
 /**
  * AI Question Generator Service
@@ -20,11 +16,12 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
   /**
    * Default AI model to use for question generation
    */
-  private readonly DEFAULT_MODEL: OpenRouterModel = 'mistralai/mistral-7b-instruct:free';
+  private readonly DEFAULT_MODEL: OpenRouterModel = 'meta-llama/llama-4-scout:free';
 
   /**
    * Generate questions based on project context
    * @param projectDetails - Project details to contextualize questions
+   * @param apiKey - API key for OpenRouter service
    * @param count - Number of questions to generate (default: 5)
    * @param startSequenceNumber - Starting sequence number for questions (default: 1)
    * @param previousQuestionsAnswers - Optional array of previous questions and answers to consider
@@ -32,6 +29,7 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
    */
   public async generateQuestions(
     projectDetails: ProjectDetails,
+    apiKey: string,
     count: number = 5,
     startSequenceNumber: number = 1,
     previousQuestionsAnswers?: QuestionAnswer[]
@@ -45,7 +43,7 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
         role: 'system' as const,
         content: `You are an experienced product manager tasked with helping to create a comprehensive Product Requirements Document (PRD) based on the provided information. Your goal is to generate a list of questions and recommendations that will be used in a follow-up prompt to create a complete PRD.
         Generate exactly ${count} of questions, no more, and no less.
-        Format your response as a JSON object with a 'questions' array, where each question has a 'question' field. Example: { "questions": ["Question 1", "Question 2"] }`
+        Format your response as a JSON array. Example: ["Question 1", "Question 2"]`
       };
       
       // Build the user message with project context
@@ -59,8 +57,8 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
           userMessageContent += `Question ${index + 1}: ${qa.question}\nAnswer: ${qa.answer}\n\n`;
         });
         
-        userMessageContent += `\nBased on these previous answers, generate ${count} NEW questions that build upon this information and help the team think more deeply about their project.\n;
-        Avoid asking questions that are too similar to the ones already answered.\n`;
+        userMessageContent += `\nBased on these previous answers, generate ${count} NEW questions that build upon this information and help the team think more deeply about their project.\n`;
+        userMessageContent += `Avoid asking questions that are too similar to the ones already answered.\n`;
       }
       
       const messages: OpenRouterMessage[] = [
@@ -72,7 +70,7 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
       ];
 
       try {
-        return await this.processAIResponse(messages, count, startSequenceNumber);
+        return await this.processAIResponse(messages, count, startSequenceNumber, apiKey);
       } catch (aiError) {
         console.warn('AI contextual question generation failed, using fallback:', aiError);
         return this.getFallbackQuestions(count, startSequenceNumber);
@@ -88,13 +86,15 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
    * @param messages - The messages to send to the AI
    * @param count - Number of questions to generate
    * @param startSequenceNumber - Starting sequence number for questions
+   * @param apiKey - API key for OpenRouter service
    * @returns Promise with array of generated questions
    * @private
    */
   private async processAIResponse(
     messages: OpenRouterMessage[],
     count: number,
-    startSequenceNumber: number
+    startSequenceNumber: number,
+    apiKey: string
   ): Promise<GeneratedQuestion[]> {
     try {
       // Make the API request to OpenRouter
@@ -117,7 +117,7 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
             }
           }
         }
-      });
+      }, apiKey);
 
       // Extract the content from the response
       const content = response.choices[0]?.message.content;
@@ -137,9 +137,9 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
       }
 
       // Map the validated questions to the GeneratedQuestion format
-      const questions = validationResult.data.questions.map((q, index) => {
+      const questions = validationResult.data.map((q, index) => {
         return {
-          question: q.question,
+          question: q,
           sequence_number: startSequenceNumber + index
         };
       });
