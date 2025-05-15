@@ -98,11 +98,10 @@ export class OpenRouterService {
   /**
    * Send a completion request to the OpenRouter API
    */
-  static async generateCompletion(options: OpenRouterRequestOptions): Promise<OpenRouterResponse> {
-    // Validate API key availability
-    const apiKey = import.meta.env.PUBLIC_OPEN_ROUTER_KEY;
+  static async generateCompletion(options: OpenRouterRequestOptions, apiKey: string): Promise<OpenRouterResponse> {
+    // Validate API key (now passed as an argument)
     if (!apiKey) {
-      throw new OpenRouterServiceError('OpenRouter API key is not configured', 500);
+      throw new OpenRouterServiceError('OpenRouter API key was not provided to the service method', 500);
     }
 
     // Handle early error cases
