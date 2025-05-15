@@ -16,7 +16,7 @@ export interface GeneratedQuestion {
  */
 export interface QuestionAnswer {
   question: string;
-  answer: string;
+  answer: string | null;
 }
 
 /**

@@ -5,8 +5,11 @@ import type {
   ProjectDetailsDTO, 
   CreateProjectCommand, 
   UpdateProjectCommand,
-  DeleteResponseDTO
+  DeleteResponseDTO,
+  AIQuestionDTO
 } from '@/types';
+import { AIQuestionGeneratorService } from './ai-question-generator.service';
+import { getSecret } from 'astro:env/server';
 
 /**
  * Service for handling project-related operations
@@ -271,21 +274,30 @@ export class ProjectService {
     
     // Get project details
     const project = await this.getProjectById(supabase, id);
-    
-    // TODO: Implement actual PRD generation logic
-    // This would typically involve calling an AI service or processing the project data
-    // For now, we'll return a mock response
-    
-    // Mock generated PRD content
-    const prd = `# Product Requirements Document for ${project.name}\n\n` +
-      `## Overview\n${project.description || 'No description provided.'}\n\n` +
-      `## Main Problem\n${project.main_problem || 'No main problem defined.'}\n\n` +
-      `## Minimum Feature Set\n${project.min_feature_set || 'No minimum feature set defined.'}\n\n` +
-      `## Out of Scope\n${project.out_of_scope || 'No out of scope items defined.'}\n\n` +
-      `## Success Criteria\n${project.success_criteria || 'No success criteria defined.'}`;
-    
+
+    // Create an instance of AIQuestionGeneratorService
+    const aiGenerator = new AIQuestionGeneratorService();
+
+    const { data: existingQuestions, error: fetchError } = await supabase
+      .from('ai_questions')
+      .select('id, question, answer, sequence_number, created_at')
+      .eq('project_id', id)
+      .order('sequence_number', { ascending: true });
+
+    if (fetchError) {
+      throw new Error(`Failed to fetch existing questions: ${fetchError.message}`);
+    }
+
+    const apiKey = getSecret('OPEN_ROUTER_KEY');
+    if (!apiKey) {
+      throw new Error('OpenRouter API key is not available');
+    }
+  
+    const prdContent = await aiGenerator.generatePrdDocument(project, existingQuestions as AIQuestionDTO[], apiKey);
+  
     // Update project with generated PRD
-    const updatedProject = await this.updateProject(supabase, id, { prd });
+    // The 'prd' field in the database should accept the type returned by generatePrdDocument (currently string).
+    const updatedProject = await this.updateProject(supabase, id, { prd: prdContent, status: 'finished' });
     
     return {
       project: updatedProject,

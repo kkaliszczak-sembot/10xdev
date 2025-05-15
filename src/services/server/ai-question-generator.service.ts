@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import { OpenRouterService, type OpenRouterMessage, type OpenRouterModel } from './openrouter.service';
 import type { GeneratedQuestion, IQuestionGenerator, ProjectDetails, QuestionAnswer } from '@/interfaces/question-generator.interface';
-import { generatePrdPrompt } from '@/services/server/ai-question-prompt';
+import { generateQuestionsPrompt } from '@/services/server/prompts/generate-questions-prompt';
+import { generatePrdPrompt } from './prompts/generate-prd-prompt';
+import type { AIQuestionDTO, ProjectDetailsDTO } from '@/types';
 
 /**
  * Schema for validating AI-generated question responses
@@ -41,13 +43,14 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
       // Build the system message
       const systemMessage = {
         role: 'system' as const,
-        content: `You are an experienced product manager tasked with helping to create a comprehensive Product Requirements Document (PRD) based on the provided information. Your goal is to generate a list of questions and recommendations that will be used in a follow-up prompt to create a complete PRD.
-        Generate exactly ${count} of questions, no more, and no less.
-        Format your response as a JSON array. Example: ["Question 1", "Question 2"]`
+        content: generateQuestionsPrompt(count)
       };
       
       // Build the user message with project context
-      let userMessageContent = generatePrdPrompt(projectContext, count);
+      let userMessageContent = `
+        <project_description>
+        ${projectContext}
+        </project_description>`;
       
       // Add previous questions and answers if available
       if (previousQuestionsAnswers && previousQuestionsAnswers.length > 0) {
@@ -79,6 +82,35 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
       console.error('Error generating contextual questions:', error);
       throw new Error('Failed to generate contextual questions');
     }
+  }
+
+  public async generatePrdDocument(project: ProjectDetailsDTO, questions: AIQuestionDTO[], apiKey: string): Promise<string> {
+    const projectContext = this.buildProjectContext(project as ProjectDetails);
+    const prompt = `<project_description>${projectContext}</project_description> \n\n` + generatePrdPrompt(questions);
+    
+    const systemMessage = {
+      role: 'user' as const,
+      content: prompt
+    };
+    const response = await OpenRouterService.generateCompletion({
+      model: this.DEFAULT_MODEL,
+      messages: [systemMessage],
+      max_tokens: 2000,
+      response_format: { 
+        type: "json_schema",
+        json_schema: {
+          name: "document",
+          strict: true,
+          schema: {
+            type: "string"
+          }
+        }
+      }
+    }, apiKey);
+
+    const responseText = response.choices[0]?.message.content ?? '';
+    
+    return responseText.substring(1, responseText.length - 1);
   }
 
   /**

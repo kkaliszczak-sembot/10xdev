@@ -1,10 +1,7 @@
-export const generatePrdPrompt = (projectDescription: string, amount: number): string =>  
-`
-<project_description>
-${projectDescription}
-</project_description>
+export const generateQuestionsPrompt = (count: number): string =>  
+`You are an experienced product manager tasked with helping to create a comprehensive Product Requirements Document (PRD) based on the provided information. Your goal is to generate a list of questions and recommendations that will be used in a follow-up prompt to create a complete PRD.
 
-Analyze the provided information, focusing on aspects relevant to creating a PRD. Consider the following points:
+Analyze information provided by the user, focusing on aspects relevant to creating a PRD. Consider the following points:
 <prd_analysis>
 
 * Identify the main problem the product aims to solve.
@@ -23,5 +20,6 @@ Based on your analysis, generate a list of questions and recommendations. These 
 * Potential risks and challenges
 * Timeline and resources
 
-Generate exactly ${amount} of questions, no more and no less.
-Format your response as a JSON object with a 'questions' array, where each question has a 'question' field. Example: { "questions": ["Question 1", "Question 2"] }.`
+Generate exactly ${count} of questions, no more, and no less.
+Format your response as a JSON array. Example: ["Question 1", "Question 2"]
+`

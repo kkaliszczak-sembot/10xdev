@@ -15,7 +15,7 @@ import PlanningSessionError from './planning/PlanningSessionError.vue';
 import PlanningQuestionsForm from './planning/PlanningQuestionsForm.vue';
 
 // Import services
-import { PlanningService } from '@/services/server/planning.service';
+import { PlanningService } from '@/services/client/planning.service';
 import { ProjectClientService } from '@/services/client/project.client.service';
 import { EventBusService } from '@/services/client/event-bus.service';
 
