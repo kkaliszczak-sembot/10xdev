@@ -101,7 +101,7 @@ const hasPRD = computed(() => {
 });
 
 const prdHtml = computed(() => {
-  return project.value?.prd ? project.value.prd.replace(/\n/g, '<br>') : '';
+  return project.value?.prd ? project.value.prd.replaceAll(/\\n/g, '<br>') : '';
 });
 
 // Get status badge variant based on project status
