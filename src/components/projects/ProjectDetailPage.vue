@@ -3,7 +3,6 @@ import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import { useForm } from 'vee-validate';
 import { z } from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
-import { marked } from 'marked';
 import type { ProjectDetailsDTO, UpdateProjectCommand } from '../../types';
 import PlanningSession from './PlanningSession.vue';
 import { EventBusService } from '@/services/client/event-bus.service';
