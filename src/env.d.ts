@@ -12,7 +12,7 @@ declare global {
         env: {
           OPEN_ROUTER_KEY: string;
           SESSION_SECRET?: string; 
-          SESSION?: KVNamespace;   
+          SESSION?: KVNamespace;
           // Add other environment variables accessed via runtime.env here
         };
         waitUntil: (promise: Promise<any>) => void;
