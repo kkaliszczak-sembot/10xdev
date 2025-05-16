@@ -223,7 +223,6 @@ Poniżej przedstawiono przykładowe, wysokopoziomowe scenariusze testowe. Szczeg
 ## 5. Środowisko Testowe
 
 - **Środowisko Deweloperskie (Lokalne):**
-  - Node.js v22.14.0 (zgodnie z `.nvmrc`).
   - bun.
   - Lokalna instancja Supabase (uruchamiana przez Supabase CLI).
   - Przeglądarki: Chrome (głównie), Firefox.

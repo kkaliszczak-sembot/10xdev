@@ -47,7 +47,7 @@ Project Manager is a web application designed to guide users from initial projec
 **CI/CD & Hosting:**
 
 - GitHub Actions: Automated pipelines
-- Custom VPS: Dockerized deployment
+- Cloudflare Workers
 
 ---
 
@@ -55,7 +55,6 @@ Project Manager is a web application designed to guide users from initial projec
 
 ### Prerequisites
 
-- **Node.js:** v22.14.0 ([`.nvmrc`](./.nvmrc))
 - **bun**
 
 ### Installation
