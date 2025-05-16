@@ -153,7 +153,7 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
 
       // Extract the content from the response
       const content = response.choices[0]?.message.content;
-      console.log(content);
+
       if (!content) {
         throw new Error('No content in AI response');
       }

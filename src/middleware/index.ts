@@ -1,4 +1,4 @@
-import { defineMiddleware } from 'astro:middleware';
+import { defineMiddleware, sequence } from 'astro:middleware';
 import { supabaseClient } from '../db/supabase.client';
 import type { User } from '@supabase/supabase-js';
 
@@ -10,17 +10,33 @@ declare global {
       supabase: typeof supabaseClient;
       user?: User;
       userId?: string;
+      rateLimitInfo?: {
+        remaining: number;
+        reset: number;
+        limit: number;
+      };
     }
   }
 }
 
+// Rate limit configuration
+interface RateLimitConfig {
+  limit: number;
+  windowMs: number;
+  endpoints: RegExp[];
+}
+
+// In-memory store for rate limiting
+// In a production environment, consider using Redis or another distributed store
+const rateLimitStore = new Map<string, { count: number, resetTime: number }>();
+
 /**
- * Middleware for the application
+ * Authentication middleware for the application
  * 1. Initialize Supabase client
  * 2. Check authentication for protected routes
  * 3. Handle API authentication and project ownership
  */
-export const onRequest = defineMiddleware(async (context, next) => {
+const authMiddleware = defineMiddleware(async (context, next) => {
   // Initialize Supabase client
   context.locals.supabase = supabaseClient;
   
@@ -109,6 +125,116 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
   }
   
-  // Continue to the route handler
+  // Continue to the next middleware
   return next();
 });
+
+/**
+ * Rate limiting middleware for API endpoints
+ * Limits requests to specific endpoints defined by regexes
+ */
+const rateLimitMiddleware = defineMiddleware(async (context, next) => {
+  const pathname = context.url.pathname;
+  
+  // Rate limit configuration - replace these with your actual regexes
+  const rateLimitConfig: RateLimitConfig = {
+    limit: 5, // requests
+    windowMs: 60 * 1000, // 1 minute
+    endpoints: [
+      /^\/api\/projects\/.*\/generate-questions/,
+      /^\/api\/projects\/.*\/generate-prd/,
+    ]
+  };
+  
+  // Check if the current path matches any of the rate-limited endpoints
+  const shouldRateLimit = rateLimitConfig.endpoints.some(regex => regex.test(pathname));
+  
+  if (shouldRateLimit) {
+    // Use userId as the key for rate limiting if available, otherwise use IP
+    const key = context.locals.userId || context.clientAddress || 'anonymous';
+    const now = Date.now();
+    
+    // Get or create rate limit entry
+    let rateLimit = rateLimitStore.get(key);
+    
+    if (!rateLimit || now > rateLimit.resetTime) {
+      // Create new entry if none exists or window has expired
+      rateLimit = {
+        count: 0,
+        resetTime: now + rateLimitConfig.windowMs
+      };
+    }
+    
+    // Increment request count
+    rateLimit.count++;
+    
+    // Store updated rate limit info
+    rateLimitStore.set(key, rateLimit);
+    
+    // Add rate limit info to context
+    context.locals.rateLimitInfo = {
+      remaining: Math.max(0, rateLimitConfig.limit - rateLimit.count),
+      reset: rateLimit.resetTime,
+      limit: rateLimitConfig.limit
+    };
+    
+    // Check if rate limit exceeded
+    if (rateLimit.count > rateLimitConfig.limit) {
+      // Calculate time until reset
+      const retryAfter = Math.ceil((rateLimit.resetTime - now) / 1000);
+      
+      return new Response(
+        JSON.stringify({ 
+          error: 'Too Many Requests', 
+          message: 'Rate limit exceeded. Please try again later.' 
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            'Content-Type': 'application/json',
+            'Retry-After': retryAfter.toString(),
+            'X-RateLimit-Limit': rateLimitConfig.limit.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': Math.ceil(rateLimit.resetTime / 1000).toString()
+          } 
+        }
+      );
+    }
+    
+    // Add rate limit headers to the response
+    context.locals.rateLimitInfo = {
+      remaining: rateLimitConfig.limit - rateLimit.count,
+      reset: rateLimit.resetTime,
+      limit: rateLimitConfig.limit
+    };
+  }
+  
+  // Continue to the route handler
+  const response = await next();
+  
+  // Add rate limit headers to the response if applicable
+  if (shouldRateLimit && context.locals.rateLimitInfo) {
+    const info = context.locals.rateLimitInfo;
+    
+    // Create a new response with headers
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: {
+        ...Object.fromEntries(response.headers.entries()),
+        'X-RateLimit-Limit': info.limit.toString(),
+        'X-RateLimit-Remaining': info.remaining.toString(),
+        'X-RateLimit-Reset': Math.ceil(info.reset / 1000).toString()
+      }
+    });
+  }
+  
+  return response;
+});
+
+/**
+ * Combined middleware sequence
+ * 1. Authentication middleware runs first
+ * 2. Rate limiting middleware runs after authentication
+ */
+export const onRequest = sequence(authMiddleware, rateLimitMiddleware);
