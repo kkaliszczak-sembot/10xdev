@@ -71,7 +71,7 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
           content: userMessageContent
         }
       ];
-
+      
       try {
         return await this.processAIResponse(messages, count, startSequenceNumber, apiKey);
       } catch (aiError) {
@@ -153,6 +153,7 @@ export class AIQuestionGeneratorService implements IQuestionGenerator {
 
       // Extract the content from the response
       const content = response.choices[0]?.message.content;
+      console.log(content);
       if (!content) {
         throw new Error('No content in AI response');
       }

@@ -100,6 +100,10 @@ const hasPRD = computed(() => {
   return Boolean(project.value?.prd);
 });
 
+const prdHtml = computed(() => {
+  return project.value?.prd ? project.value.prd.replace(/\n/g, '<br>') : '';
+});
+
 // Get status badge variant based on project status
 const getStatusVariant = (status: string | null | undefined) => {
   if (!status) return 'outline';
@@ -490,7 +494,7 @@ fetchProject();
           <CardDescription>Generated PRD based on your project planning answers</CardDescription>
         </CardHeader>
         <CardContent>
-          <div class="prose prose-sm max-w-none" v-html="project?.prd"></div>
+          <div class="prose prose-sm max-w-none" v-html="prdHtml"></div>
         </CardContent>
       </Card>
     </div>

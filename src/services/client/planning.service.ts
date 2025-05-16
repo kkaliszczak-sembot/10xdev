@@ -32,9 +32,9 @@ export class PlanningService {
   /**
    * Generate new planning questions for a project
    */
-  static async generateQuestions(projectId: string, count = 5, startSequenceNumber = 1): Promise<AIQuestionDTO[]> {
+  static async generateQuestions(projectId: string): Promise<AIQuestionDTO[]> {
     try {
-      const response = await fetch(`/api/projects/${projectId}/generate-questions?count=${count}&startSequenceNumber=${startSequenceNumber}`, {
+      const response = await fetch(`/api/projects/${projectId}/generate-questions`, {
         method: 'POST'
       });
       

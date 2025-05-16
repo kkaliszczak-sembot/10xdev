@@ -83,7 +83,7 @@ const startPlanningSession = async () => {
 
   try {
     // Generate new questions
-    const newQuestions = await PlanningService.generateQuestions(props.projectId, 5);
+    const newQuestions = await PlanningService.generateQuestions(props.projectId);
 
     // Add questions to state
     planningQuestions.value = newQuestions;
@@ -107,13 +107,9 @@ const startPlanningSession = async () => {
 const requestMoreQuestions = async () => {
   isLoadingMoreQuestions.value = true;
   planningError.value = null;
-  const newQuestionsAmount = 5;
-  skeletonCount.value = newQuestionsAmount;
+  skeletonCount.value = 5;
 
   try {
-    // Calculate the next sequence number
-    const startSequenceNumber = (planningQuestions.value.at(-1)?.sequence_number ?? 0) + 1;
-
     // Get project details for context using the client-side service
     const projectDetails = await ProjectClientService.getProjectById(props.projectId);
 
@@ -123,9 +119,7 @@ const requestMoreQuestions = async () => {
 
     // Generate more questions using AI
     const generatedQuestions = await PlanningService.generateQuestions(
-      props.projectId,
-      newQuestionsAmount,
-      startSequenceNumber
+      props.projectId
     );
 
     planningQuestions.value = [...planningQuestions.value, ...generatedQuestions];
@@ -143,11 +137,8 @@ const requestMoreQuestions = async () => {
 
     // Fallback to standard question generation if AI fails
     try {
-      const startSequenceNumber = (planningQuestions.value.at(-1)?.sequence_number ?? 0) + 1;
       const newQuestions = await PlanningService.generateQuestions(
-        props.projectId,
-        newQuestionsAmount,
-        startSequenceNumber
+        props.projectId
       );
 
       const existingIds = planningQuestions.value.map((q: AIQuestionDTO) => q.id);

@@ -20,6 +20,9 @@ Based on your analysis, generate a list of questions and recommendations. These 
 * Potential risks and challenges
 * Timeline and resources
 
-Generate exactly ${count} of questions, no more, and no less.
-Format your response as a JSON array. Example: ["Question 1", "Question 2"]
+Generate exactly ${count} questions. Respond only with JSON array of questions, don't add any more explanation.
+
+## Example Output
+
+["Question 1", "Question 2", "Question 3"]
 `

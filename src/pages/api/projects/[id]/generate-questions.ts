@@ -1,7 +1,7 @@
 import type { APIContext } from 'astro';
 import { getSecret } from 'astro:env/server';
 import { projectIdSchema } from '../schemas';
-import { AIQuestionGeneratorService as QuestionGeneratorService } from '@/services/server/ai-question-generator.service';
+import { AIQuestionGeneratorService } from '@/services/server/ai-question-generator.service';
 import type { GeneratedQuestion } from '@/interfaces/question-generator.interface';
 
 /**
@@ -32,7 +32,7 @@ export async function POST({ params, locals, url }: APIContext) {
     }
 
     // Get count parameter from URL query
-    const count = url.searchParams.get('count') ? parseInt(url.searchParams.get('count') as string, 10) : 5;
+    const count = 5;
     
     // Get project details to potentially customize questions in the future
     const { data: project, error: projectError } = await locals.supabase
@@ -74,7 +74,7 @@ export async function POST({ params, locals, url }: APIContext) {
       );
     }
 
-    const questionGeneratorService = new QuestionGeneratorService;
+    const questionGeneratorService = new AIQuestionGeneratorService();
 
     const apiKey = getSecret('OPEN_ROUTER_KEY');
 
@@ -109,8 +109,6 @@ export async function POST({ params, locals, url }: APIContext) {
       sequence_number: q.sequence_number,
       project_id: result.data.id,
       answer: null
-      // Note: We can't store the category as metadata since the column doesn't exist
-      // If category storage is needed, the database schema would need to be updated
     }));
     
     // Update project status to in_progress if it's currently 'new'

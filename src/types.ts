@@ -53,14 +53,6 @@ export type AIQuestionDTO = Pick<
 >;
 
 /**
- * Response structure for paginated list of AI Questions
- */
-export type AIQuestionListResponseDTO = {
-  data: AIQuestionDTO[];
-  pagination: PaginationDTO;
-};
-
-/**
  * Response structure for successful deletion operations
  */
 export type DeleteResponseDTO = {
@@ -75,14 +67,6 @@ export type GeneratedPRDDTO = {
   project: ProjectDetailsDTO;
   status: 'success';
   generated_at: string;
-};
-
-/**
- * Next question response structure
- */
-export type NextQuestionDTO = {
-  question: string;
-  sequence_number: number;
 };
 
 
